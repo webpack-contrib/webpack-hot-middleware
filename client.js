@@ -1,6 +1,6 @@
 /*eslint-env browser*/
 /*global __resourceQuery*/
-//var strip = require('strip-ansi');
+var strip = require('strip-ansi');
 
 var options = {
   path: "/__webpack_hmr",
@@ -93,7 +93,7 @@ function showProblems(type, obj) {
   problemOverlay.innerHTML = '';
   problemOverlay.style.display = 'block';
   obj[type].forEach(function(msg) {
-    var clean = msg;//strip(msg);
+    var clean = strip(msg);
     console.warn("[HMR] " + clean);
     var pre = document.createElement('pre');
     pre.textContent = clean;
