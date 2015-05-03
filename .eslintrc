@@ -1,0 +1,22 @@
+{
+    "env": {
+       "node": true
+    },
+    "rules": {
+        "strict": true,
+        "quotes": false,
+        "curly": [2, "multi-line"],
+        "no-use-before-define": "func",
+        "no-unused-vars": [2, "all"],
+        "no-mixed-requires": [1, true],
+        "max-depth": [1, 5],
+        "max-len": [1, 80, 4],
+        "eqeqeq": false,
+        "new-cap": false,
+        "no-else-return": true,
+        "no-eq-null": true,
+        "no-lonely-if": true,
+        "no-path-concat": false,
+        "comma-dangle": false
+    }
+}
