@@ -1,7 +1,7 @@
 {
   "name": "webpack-hot-middleware",
   "version": "1.0.0-dev",
-  "description": "Hot reloading as middleware",
+  "description": "Webpack hot reloading you can attach to your own server",
   "main": "middleware.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
