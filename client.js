@@ -86,7 +86,7 @@ problemOverlay.style.top = 0;
 problemOverlay.style.bottom = 0;
 problemOverlay.style.overflow = 'auto';
 
-document.body.appendChild(problemOverlay);
+document.body && document.body.appendChild(problemOverlay);
 
 function showProblems(type, obj) {
   console.warn("[HMR] bundle has " + type + ":");
