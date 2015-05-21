@@ -47,6 +47,7 @@ function createEventStream(heartbeat) {
     handler: function(req, res) {
       req.socket.setKeepAlive(true);
       res.writeHead(200, {
+        'Access-Control-Allow-Origin': '*',
         'Content-Type': 'text/event-stream;charset=utf-8',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive'
