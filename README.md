@@ -54,7 +54,19 @@ And you're all set!
 
 ## Documentation
 
-More to come soon, you'll have to rely on the example for now.
+More to come soon, you'll have to mostly rely on the example for now.
+
+### Config
+
+Configuration options can be passed to the client by adding querystring parameters to the path in the webpack config.
+
+```js
+'webpack-hot-middleware/client?path=/__what&timeout=2000&overlay=false'
+```
+
+* **path** - The path which the middleware is serving the event stream on
+* **timeout** - The time to wait after a disconnection before attempting to reconnect
+* **overlay** - Set to `false` to disable the DOM-based client-side overlay.
 
 ## License
 
