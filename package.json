@@ -4,7 +4,7 @@
   "description": "Webpack hot reloading you can attach to your own server",
   "main": "middleware.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Maybe someday\""
   },
   "author": "Glen Mailer <glen@stainlessed.co.uk>",
   "license": "MIT",
