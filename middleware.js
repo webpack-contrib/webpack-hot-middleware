@@ -21,7 +21,8 @@ function webpackHotMiddleware(compiler, opts) {
       time: stats.time,
       hash: stats.hash,
       warnings: stats.warnings || [],
-      errors: stats.errors || []
+      errors: stats.errors || [],
+      modules: buildModuleMap(stats.modules)
     });
   });
   return function(req, res, next) {
@@ -38,7 +39,7 @@ function createEventStream(heartbeat) {
       fn(clients[id]);
     });
   }
-  setInterval(function heartbeat() {
+  setInterval(function heartbeatTick() {
     everyClient(function(client) {
       client.write("data: \uD83D\uDC93\n\n");
     });
@@ -65,4 +66,12 @@ function createEventStream(heartbeat) {
       });
     }
   };
+}
+
+function buildModuleMap(modules) {
+  var map = {};
+  modules.forEach(function(module) {
+    map[module.id] = module.name;
+  });
+  return map;
 }

@@ -4,7 +4,8 @@
 var options = {
   path: "/__webpack_hmr",
   timeout: 20 * 1000,
-  overlay: true
+  overlay: true,
+  reload: false
 };
 if (__resourceQuery) {
   var pathMatch = /path=(.*?)(\&|$)/.exec(__resourceQuery);
@@ -18,6 +19,10 @@ if (__resourceQuery) {
   var overlayMatch = /overlay=(.*?)(\&|$)/.exec(__resourceQuery);
   if (overlayMatch) {
     options.overlay = overlayMatch[1] !== 'false';
+  }
+  var reloadMatch = /reload=(.*?)(\&|$)/.exec(__resourceQuery);
+  if (reloadMatch) {
+    options.reload = reloadMatch[1] !== 'false';
   }
 }
 
@@ -83,6 +88,7 @@ function success() {
   if (overlay) overlay.clear();
 }
 
+var processUpdate = require('./processUpdate');
 
 function processMessage(obj) {
   if (obj.action == "building") {
@@ -95,7 +101,7 @@ function processMessage(obj) {
       problems('warnings', obj);
     } else {
       success();
-      window.postMessage("webpackHotUpdate" + obj.hash, "*");
+      processUpdate(obj.hash, obj.modules, options.reload);
     }
   }
 }
