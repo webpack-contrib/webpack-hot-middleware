@@ -53,7 +53,7 @@ And you're all set!
 
 ### 2.0.0
 
-** Breaking Change **
+**Breaking Change**
 
 As of version 2.0.0, all client functionality has been rolled into this module. This means that you should remove any reference to `webpack/hot/dev-server` or `webpack/hot/only-dev-server` from your webpack config. Instead, use the `reload` config option to control this behaviour.
 
