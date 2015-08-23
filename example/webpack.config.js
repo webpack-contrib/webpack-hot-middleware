@@ -3,9 +3,7 @@ var webpack = require('webpack');
 module.exports = {
   context: __dirname,
   entry: [
-    // Webpack comes with client code to check & reload modules
-    'webpack/hot/dev-server',
-    // We need to add our own code to receive module change notifications
+    // Add the client which connects to our middleware
     'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
     // And then the actual application
     './client.js'
@@ -20,5 +18,5 @@ module.exports = {
     new webpack.optimize.OccurenceOrderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NoErrorsPlugin()
-  ]
+  ],
 };

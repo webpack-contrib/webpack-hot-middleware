@@ -17,6 +17,7 @@
         "no-eq-null": 2,
         "no-lonely-if": 2,
         "no-path-concat": 0,
-        "comma-dangle": 0
+        "comma-dangle": 0,
+        "camelcase": 0
     }
 }
