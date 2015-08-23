@@ -57,7 +57,7 @@ function connect() {
   function handleDisconnect() {
     clearInterval(timer);
     source.close();
-    setTimeout(connect, 500);
+    setTimeout(connect, options.timeout);
   }
 
 }
