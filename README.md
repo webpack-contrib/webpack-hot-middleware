@@ -76,6 +76,14 @@ Configuration options can be passed to the client by adding querystring paramete
 * **overlay** - Set to `false` to disable the DOM-based client-side overlay.
 * **reload** - Set to `true` to auto-reload the page when webpack gets stuck.
 
+## How it Works
+
+The middleware installs itself as a webpack plugin, and listens for compiler events.
+
+Each connected client gets a [Server Sent Events](http://www.html5rocks.com/en/tutorials/eventsource/basics/) connection, the server will publish notifications to connected clients on compiler events.
+
+When the client receives a message, it will check to see if the local code is up to date. If it isn't up to date, it will trigger webpack hot module reloading.
+
 ## License
 
 Copyright 2015 Glen Mailer.
