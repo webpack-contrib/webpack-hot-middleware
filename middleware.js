@@ -26,7 +26,7 @@ function webpackHotMiddleware(compiler, opts) {
     });
   });
   return function(req, res, next) {
-    if (req.url !== opts.path) return next();
+    if (req.path !== opts.path) return next();
     eventStream.handler(req, res);
   };
 }
