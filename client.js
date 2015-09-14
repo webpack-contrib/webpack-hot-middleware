@@ -86,6 +86,7 @@ function problems(type, obj) {
   });
   if (overlay) overlay.showProblems(list);
 }
+
 function success() {
   if (overlay) overlay.clear();
 }
@@ -99,10 +100,13 @@ function processMessage(obj) {
     console.log("[HMR] bundle rebuilt in " + obj.time + "ms");
     if (obj.errors.length > 0) {
       problems('errors', obj);
-    } else if (obj.warnings.length > 0) {
-      problems('warnings', obj);
     } else {
-      success();
+      if (obj.warnings.length > 0) {
+        problems('warnings', obj);
+      } else {
+        success();
+      }
+      
       processUpdate(obj.hash, obj.modules, options.reload);
     }
   }
