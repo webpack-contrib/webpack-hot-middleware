@@ -1,8 +1,6 @@
 /*eslint-env browser*/
 /*global __resourceQuery*/
 
-require("eventsource-polyfill");
-
 var options = {
   path: "/__webpack_hmr",
   timeout: 20 * 1000,
