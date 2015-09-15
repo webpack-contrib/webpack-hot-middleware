@@ -13,7 +13,6 @@
   "author": "Glen Mailer <glen@stainlessed.co.uk>",
   "license": "MIT",
   "dependencies": {
-    "eventsource-polyfill": "^0.9.6",
     "strip-ansi": "^2.0.1"
   }
 }
