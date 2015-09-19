@@ -84,6 +84,20 @@ Each connected client gets a [Server Sent Events](http://www.html5rocks.com/en/t
 
 When the client receives a message, it will check to see if the local code is up to date. If it isn't up to date, it will trigger webpack hot module reloading.
 
+## Troubleshooting
+
+### Use on browsers without EventSource
+
+If you want to use this module with browsers that don't support eventsource, you'll need to use a [polyfill](https://libraries.io/search?platforms=NPM&q=eventsource+polyfill). See [issue #11](https://github.com/glenjamin/webpack-hot-middleware/issues/11)
+
+### Not receiving updates in client when using Gzip
+
+This is because gzip generally buffers the response, but the Server Sent Events event-stream expects to be able to send data to the client immediately. You should make sure gzipping isn't being applied to the event-stream. See [issue #10](https://github.com/glenjamin/webpack-hot-middleware/issues/10).
+
+### Use with auto-restarting servers
+
+This module expects to remain running while you make changes to your webpack bundle, if you use a process manager like nodemon then you will likely see very slow changes on the client side. If you want to reload the server component, either use a separate process, or find a way to reload your server routes without restarting the whole process.
+
 ## License
 
 Copyright 2015 Glen Mailer.
