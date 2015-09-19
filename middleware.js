@@ -22,7 +22,7 @@ function webpackHotMiddleware(compiler, opts) {
       hash: stats.hash,
       warnings: stats.warnings || [],
       errors: stats.errors || [],
-      modules: buildModuleMap(stats)
+      modules: buildModuleMap(stats.modules)
     });
   });
   return function(req, res, next) {
@@ -68,14 +68,7 @@ function createEventStream(heartbeat) {
   };
 }
 
-function buildModuleMap(stats) {
-  var modules = stats.modules;
-  if (!modules) {
-    modules = [];
-    stats.children.forEach(function(child) {
-      modules.push.apply(modules, child.modules);
-    });
-  }
+function buildModuleMap(modules) {
   var map = {};
   modules.forEach(function(module) {
     map[module.id] = module.name;
