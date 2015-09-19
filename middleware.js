@@ -26,7 +26,7 @@ function webpackHotMiddleware(compiler, opts) {
     });
   });
   return function(req, res, next) {
-    if (req.url !== opts.path) return next();
+    if (!pathMatch(req.url, opts.path)) return next();
     eventStream.handler(req, res);
   };
 }
@@ -66,6 +66,13 @@ function createEventStream(heartbeat) {
       });
     }
   };
+}
+
+function pathMatch(url, path) {
+  if (url == path) return true;
+  var q = url.indexOf('?');
+  if (q == -1) return false;
+  return url.substring(0, q) == path;
 }
 
 function buildModuleMap(modules) {
