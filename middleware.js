@@ -1,5 +1,8 @@
 module.exports = webpackHotMiddleware;
 
+var helpers = require('./helpers');
+var pathMatch = helpers.pathMatch;
+
 function webpackHotMiddleware(compiler, opts) {
   opts = opts || {};
   opts.log = typeof opts.log == 'undefined' ? console.log : opts.log;
@@ -66,13 +69,6 @@ function createEventStream(heartbeat) {
       });
     }
   };
-}
-
-function pathMatch(url, path) {
-  if (url == path) return true;
-  var q = url.indexOf('?');
-  if (q == -1) return false;
-  return url.substring(0, q) == path;
 }
 
 function buildModuleMap(modules) {
