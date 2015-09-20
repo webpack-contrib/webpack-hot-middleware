@@ -96,7 +96,7 @@ This is because gzip generally buffers the response, but the Server Sent Events 
 
 ### Use with auto-restarting servers
 
-This module expects to remain running while you make changes to your webpack bundle, if you use a process manager like nodemon then you will likely see very slow changes on the client side. If you want to reload the server component, either use a separate process, or find a way to reload your server routes without restarting the whole process.
+This module expects to remain running while you make changes to your webpack bundle, if you use a process manager like nodemon then you will likely see very slow changes on the client side. If you want to reload the server component, either use a separate process, or find a way to reload your server routes without restarting the whole process. See https://github.com/glenjamin/ultimate-hot-reloading-example for an example of one way to do this.
 
 ## License
 
