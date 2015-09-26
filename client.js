@@ -26,7 +26,15 @@ if (__resourceQuery) {
   }
 }
 
-connect();
+if (typeof window.EventSource !== 'function') {
+  console.warn(
+    "webpack-hot-middleware's client requires EventSource to work. " +
+    "You should include a polyfill if you want to support this browser: " +
+    "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools"
+  );
+} else {
+  connect();
+}
 
 function connect() {
   var source = new window.EventSource(options.path);
@@ -104,7 +112,7 @@ function processMessage(obj) {
       } else {
         success();
       }
-      
+
       processUpdate(obj.hash, obj.modules, options.reload);
     }
   }
