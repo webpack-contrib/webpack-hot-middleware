@@ -16,7 +16,8 @@ var applyOptions = { ignoreUnaccepted: true };
 
 function upToDate(hash) {
   if (hash) lastHash = hash;
-  return lastHash == __webpack_hash__;
+  var newHash = typeof __webpack_hash__ === 'function' ? __webpack_hash__() : __webpack_hash__;
+  return lastHash == newHash;
 }
 
 module.exports = function(hash, moduleMap, reload) {
