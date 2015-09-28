@@ -3,4 +3,5 @@ sudo: false
 node_js:
   - "0.12"
   - "4"
-script: "npm test"
+script: "npm run travis"
+after_script: "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
