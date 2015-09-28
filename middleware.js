@@ -28,10 +28,12 @@ function webpackHotMiddleware(compiler, opts) {
       modules: buildModuleMap(stats.modules)
     });
   });
-  return function(req, res, next) {
+  var middleware = function(req, res, next) {
     if (!pathMatch(req.url, opts.path)) return next();
     eventStream.handler(req, res);
   };
+  middleware.publish = eventStream.publish;
+  return middleware;
 }
 
 function createEventStream(heartbeat) {
@@ -53,6 +55,7 @@ function createEventStream(heartbeat) {
       res.writeHead(200, {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'text/event-stream;charset=utf-8',
+        'Transfer-Encoding': 'chunked',
         'Cache-Control': 'no-cache, no-transform',
         'Connection': 'keep-alive'
       });
