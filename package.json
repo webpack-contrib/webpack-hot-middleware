@@ -4,7 +4,8 @@
   "description": "Webpack hot reloading you can attach to your own server",
   "main": "middleware.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "travis": "istanbul cover _mocha --"
   },
   "repository": {
     "type": "git",
@@ -19,6 +20,8 @@
     "express": "^4.13.3",
     "mocha": "^2.3.2",
     "supertest": "^1.1.0",
-    "sinon": "^1.12.2"
+    "sinon": "^1.12.2",
+    "coveralls": "^2.11.2",
+    "istanbul": "^0.3.14"
   }
 }
