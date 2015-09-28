@@ -89,8 +89,9 @@ function success() {
   if (overlay) overlay.clear();
 }
 
-var processUpdate = require('./processUpdate');
+var processUpdate = require('./process-update');
 
+var customHandler;
 function processMessage(obj) {
   if (obj.action == "building") {
     console.log("[HMR] bundle rebuilding");
@@ -104,8 +105,18 @@ function processMessage(obj) {
       } else {
         success();
       }
-      
+
       processUpdate(obj.hash, obj.modules, options.reload);
     }
+  } else if (customHandler) {
+    customHandler(obj);
   }
+}
+
+if (module) {
+  module.exports = {
+    subscribe: function subscribe(handler) {
+      customHandler = handler;
+    }
+  };
 }
