@@ -2,6 +2,8 @@
 
 Webpack hot reloading using only [webpack-dev-middleware](http://webpack.github.io/docs/webpack-dev-middleware.html). This allows you to add hot reloading into an existing server without [webpack-dev-server](http://webpack.github.io/docs/webpack-dev-server.html).
 
+[![npm version](https://img.shields.io/npm/v/webpack-hot-middleware.svg)](https://www.npmjs.com/package/webpack-hot-middleware) [![Build Status](https://img.shields.io/travis/glenjamin/webpack-hot-middleware/master.svg)](https://travis-ci.org/glenjamin/webpack-hot-middleware) [![Coverage Status](https://coveralls.io/repos/glenjamin/webpack-hot-middleware/badge.svg?branch=master)](https://coveralls.io/r/glenjamin/webpack-hot-middleware?branch=master) ![MIT Licensed](https://img.shields.io/npm/l/webpack-hot-middleware.svg)
+
 ## Installation & Usage
 
 See [example/](./example/) for an example of usage.
