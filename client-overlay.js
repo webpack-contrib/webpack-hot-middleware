@@ -21,7 +21,6 @@ function showProblems(lines) {
   clientOverlay.innerHTML = '';
   clientOverlay.style.display = 'block';
   lines.forEach(function(msg) {
-    console.warn("[HMR] " + msg);
     var pre = document.createElement('pre');
     pre.textContent = msg;
     clientOverlay.appendChild(pre);

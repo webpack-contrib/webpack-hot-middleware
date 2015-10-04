@@ -5,24 +5,23 @@ var options = {
   path: "/__webpack_hmr",
   timeout: 20 * 1000,
   overlay: true,
-  reload: false
+  reload: false,
+  log: true,
+  warn: true
 };
 if (__resourceQuery) {
-  var pathMatch = /path=(.*?)(\&|$)/.exec(__resourceQuery);
-  if (pathMatch) {
-    options.path = pathMatch[1];
+  var querystring = require('querystring');
+  var overrides = querystring.parse(__resourceQuery);
+  if (overrides.path) options.path = overrides.path;
+  if (overrides.timeout) options.timeout = overrides.timeout;
+  if (overrides.overlay) options.overlay = overrides.overlay !== 'false';
+  if (overrides.reload) options.reload = overrides.reload !== 'false';
+  if (overrides.noInfo && overrides.noInfo !== 'false') {
+    options.log = false;
   }
-  var timeoutMatch = /timeout=(.*?)(\&|$)/.exec(__resourceQuery);
-  if (timeoutMatch) {
-    options.timeout = parseFloat(timeoutMatch[1]);
-  }
-  var overlayMatch = /overlay=(.*?)(\&|$)/.exec(__resourceQuery);
-  if (overlayMatch) {
-    options.overlay = overlayMatch[1] !== 'false';
-  }
-  var reloadMatch = /reload=(.*?)(\&|$)/.exec(__resourceQuery);
-  if (reloadMatch) {
-    options.reload = reloadMatch[1] !== 'false';
+  if (overrides.quiet && overrides.quiet !== 'false') {
+    options.log = false;
+    options.warn = false;
   }
 }
 
@@ -51,7 +50,7 @@ function connect() {
   }, options.timeout / 2);
 
   function handleOnline() {
-    console.log("[HMR] connected");
+    if (options.log) console.log("[HMR] connected");
     lastActivity = new Date();
   }
 
@@ -63,7 +62,9 @@ function connect() {
     try {
       processMessage(JSON.parse(event.data));
     } catch (ex) {
-      console.warn("Invalid HMR message: " + event.data + "\n" + ex);
+      if (options.warn) {
+        console.warn("Invalid HMR message: " + event.data + "\n" + ex);
+      }
     }
   }
 
@@ -83,11 +84,11 @@ if (options.overlay) {
 }
 
 function problems(type, obj) {
-  console.warn("[HMR] bundle has " + type + ":");
+  if (options.warn) console.warn("[HMR] bundle has " + type + ":");
   var list = [];
   obj[type].forEach(function(msg) {
     var clean = strip(msg);
-    console.warn("[HMR] " + clean);
+    if (options.warn) console.warn("[HMR] " + clean);
     list.push(clean);
   });
   if (overlay && type !== 'warnings') overlay.showProblems(list);
@@ -102,9 +103,9 @@ var processUpdate = require('./process-update');
 var customHandler;
 function processMessage(obj) {
   if (obj.action == "building") {
-    console.log("[HMR] bundle rebuilding");
+    if (options.log) console.log("[HMR] bundle rebuilding");
   } else if (obj.action == "built") {
-    console.log("[HMR] bundle rebuilt in " + obj.time + "ms");
+    if (options.log) console.log("[HMR] bundle rebuilt in " + obj.time + "ms");
     if (obj.errors.length > 0) {
       problems('errors', obj);
     } else {
@@ -114,7 +115,7 @@ function processMessage(obj) {
         success();
       }
 
-      processUpdate(obj.hash, obj.modules, options.reload);
+      processUpdate(obj.hash, obj.modules, options);
     }
   } else if (customHandler) {
     customHandler(obj);
