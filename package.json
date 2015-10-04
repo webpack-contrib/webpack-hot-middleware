@@ -14,6 +14,7 @@
   "author": "Glen Mailer <glen@stainlessed.co.uk>",
   "license": "MIT",
   "dependencies": {
+    "querystring": "^0.2.0",
     "strip-ansi": "^2.0.1"
   },
   "devDependencies": {

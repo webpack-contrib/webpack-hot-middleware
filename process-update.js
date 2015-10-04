@@ -19,9 +19,10 @@ function upToDate(hash) {
   return lastHash == __webpack_hash__;
 }
 
-module.exports = function(hash, moduleMap, reload) {
+module.exports = function(hash, moduleMap, options) {
+  var reload = options.reload;
   if (!upToDate(hash) && module.hot.status() == "idle") {
-    console.log("[HMR] Checking for updates on the server...");
+    if (options.log) console.log("[HMR] Checking for updates on the server...");
     check();
   }
 
@@ -30,8 +31,10 @@ module.exports = function(hash, moduleMap, reload) {
       if (err) return handleError(err);
 
       if(!updatedModules) {
-        console.warn("[HMR] Cannot find update (Full reload needed)");
-        console.warn("[HMR] (Probably because of restarting the server)");
+        if (options.warn) {
+          console.warn("[HMR] Cannot find update (Full reload needed)");
+          console.warn("[HMR] (Probably because of restarting the server)");
+        }
         performReload();
         return null;
       }
@@ -52,43 +55,51 @@ module.exports = function(hash, moduleMap, reload) {
     });
 
     if(unacceptedModules.length > 0) {
-      console.warn(
-        "[HMR] The following modules couldn't be hot updated: " +
-        "(Full reload needed)"
-      );
-      unacceptedModules.forEach(function(moduleId) {
-        console.warn("[HMR]  - " + moduleMap[moduleId]);
-      });
+      if (options.warn) {
+        console.warn(
+          "[HMR] The following modules couldn't be hot updated: " +
+          "(Full reload needed)"
+        );
+        unacceptedModules.forEach(function(moduleId) {
+          console.warn("[HMR]  - " + moduleMap[moduleId]);
+        });
+      }
       performReload();
       return;
     }
 
-    if(!renewedModules || renewedModules.length === 0) {
-      console.log("[HMR] Nothing hot updated.");
-    } else {
-      console.log("[HMR] Updated modules:");
-      renewedModules.forEach(function(moduleId) {
-        console.log("[HMR]  - " + moduleMap[moduleId]);
-      });
-    }
+    if (options.log) {
+      if(!renewedModules || renewedModules.length === 0) {
+        console.log("[HMR] Nothing hot updated.");
+      } else {
+        console.log("[HMR] Updated modules:");
+        renewedModules.forEach(function(moduleId) {
+          console.log("[HMR]  - " + moduleMap[moduleId]);
+        });
+      }
 
-    if (upToDate()) {
-      console.log("[HMR] App is up to date.");
+      if (upToDate()) {
+        console.log("[HMR] App is up to date.");
+      }
     }
   }
 
   function handleError(err) {
     if (module.hot.status() in failureStatuses) {
-      console.warn("[HMR] Cannot check for update (Full reload needed)");
-      console.warn("[HMR] " + err.stack || err.message);
+      if (options.warn) {
+        console.warn("[HMR] Cannot check for update (Full reload needed)");
+        console.warn("[HMR] " + err.stack || err.message);
+      }
       performReload();
       return;
     }
-    console.warn("[HMR] Update check failed: " + err.stack || err.message);
+    if (options.warn) {
+      console.warn("[HMR] Update check failed: " + err.stack || err.message);
+    }
   }
 
   function performReload() {
-    console.warn("[HMR] Reloading page");
+    if (options.warn) console.warn("[HMR] Reloading page");
     if (reload) window.location.reload();
   }
 };
