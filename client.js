@@ -11,7 +11,7 @@ var options = {
 };
 if (__resourceQuery) {
   var querystring = require('querystring');
-  var overrides = querystring.parse(__resourceQuery);
+  var overrides = querystring.parse(__resourceQuery.slice(1));
   if (overrides.path) options.path = overrides.path;
   if (overrides.timeout) options.timeout = overrides.timeout;
   if (overrides.overlay) options.overlay = overrides.overlay !== 'false';
