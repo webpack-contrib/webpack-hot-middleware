@@ -25,7 +25,7 @@ if (__resourceQuery) {
   }
 }
 
-if (typeof window.EventSource !== 'function') {
+if (typeof window.EventSource === 'undefined') {
   console.warn(
     "webpack-hot-middleware's client requires EventSource to work. " +
     "You should include a polyfill if you want to support this browser: " +
