@@ -102,6 +102,17 @@ This is because gzip generally buffers the response, but the Server Sent Events 
 
 This module expects to remain running while you make changes to your webpack bundle, if you use a process manager like nodemon then you will likely see very slow changes on the client side. If you want to reload the server component, either use a separate process, or find a way to reload your server routes without restarting the whole process. See https://github.com/glenjamin/ultimate-hot-reloading-example for an example of one way to do this.
 
+### Use with multiple entry points in webpack
+
+If you want to use [multiple entry points in your webpack config](https://webpack.github.io/docs/multiple-entry-points.html) you need to include the hot middleware client in each entry point. This ensures that each entry point file knows how to handle hot updates.
+
+```js
+entry: {
+    vendor: ['jquery', 'webpack-hot-middleware/client?path=/__webpack_hmr'],
+    index: ['./src/index', 'webpack-hot-middleware/client?path=/__webpack_hmr']
+}
+```
+
 ## License
 
 Copyright 2015 Glen Mailer.
