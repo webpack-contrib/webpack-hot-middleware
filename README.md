@@ -108,8 +108,8 @@ If you want to use [multiple entry points in your webpack config](https://webpac
 
 ```js
 entry: {
-    vendor: ['jquery', 'webpack-hot-middleware/client?path=/__webpack_hmr'],
-    index: ['./src/index', 'webpack-hot-middleware/client?path=/__webpack_hmr']
+    vendor: ['jquery', 'webpack-hot-middleware/client'],
+    index: ['./src/index', 'webpack-hot-middleware/client']
 }
 ```
 
