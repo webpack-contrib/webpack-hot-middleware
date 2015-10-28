@@ -10,5 +10,8 @@
     "webpack": "^1.8.11",
     "webpack-dev-middleware": "^1.0.11",
     "webpack-hot-middleware": "./../"
+  },
+  "scripts": {
+    "start:multientry": "WEBPACK_CONFIG=./webpack.config.multientry.js node server.js"
   }
 }

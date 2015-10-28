@@ -13,7 +13,7 @@ app.use(require('morgan')('short'));
 
   // Step 1: Create & configure a webpack compiler
   var webpack = require('webpack');
-  var webpackConfig = require('./webpack.config');
+  var webpackConfig = require(process.env.WEBPACK_CONFIG ? process.env.WEBPACK_CONFIG : './webpack.config');
   var compiler = webpack(webpackConfig);
 
   // Step 2: Attach the dev middleware to the compiler & the server
@@ -29,8 +29,11 @@ app.use(require('morgan')('short'));
 
 // Do anything you like with the rest of your express application.
 
-app.get("/", function(req, res) {
+app.get("/index.html", function(req, res) {
   res.sendFile(__dirname + '/index.html');
+});
+app.get("/index-multientry.html", function(req, res) {
+  res.sendFile(__dirname + '/index-multientry.html');
 });
 
 if (require.main === module) {
