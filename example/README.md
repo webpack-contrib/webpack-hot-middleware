@@ -13,3 +13,14 @@ npm start
 * Edit `client.js` & save
 * Watch the page reload
 * Also try making a syntax error in `client.js`.
+
+## Multiple Entry Points Example
+
+There is also an example for multiple entry points in webpack.
+
+```sh
+npm run start:multientry
+```
+
+* Open page in browser http://localhost:1616/multientry
+* Edit `client.js` or `extra.js` & save

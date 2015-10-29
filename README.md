@@ -104,7 +104,7 @@ This module expects to remain running while you make changes to your webpack bun
 
 ### Use with multiple entry points in webpack
 
-If you want to use [multiple entry points in your webpack config](https://webpack.github.io/docs/multiple-entry-points.html) you need to include the hot middleware client in each entry point. This ensures that each entry point file knows how to handle hot updates.
+If you want to use [multiple entry points in your webpack config](https://webpack.github.io/docs/multiple-entry-points.html) you need to include the hot middleware client in each entry point. This ensures that each entry point file knows how to handle hot updates. See the [examples folder README](example/README.md) for an example.
 
 ```js
 entry: {
