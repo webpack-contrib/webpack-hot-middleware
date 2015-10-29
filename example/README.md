@@ -22,5 +22,5 @@ There is also an example for multiple entry points in webpack.
 npm run start:multientry
 ```
 
-* Open page in browser http://localhost:1616/index-multientry.html
+* Open page in browser http://localhost:1616/multientry
 * Edit `client.js` or `extra.js` & save
