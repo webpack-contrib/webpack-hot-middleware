@@ -29,10 +29,10 @@ app.use(require('morgan')('short'));
 
 // Do anything you like with the rest of your express application.
 
-app.get("/index.html", function(req, res) {
+app.get("/", function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
-app.get("/index-multientry.html", function(req, res) {
+app.get("/multientry", function(req, res) {
   res.sendFile(__dirname + '/index-multientry.html');
 });
 
