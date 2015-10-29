@@ -14,7 +14,7 @@ npm start
 * Watch the page reload
 * Also try making a syntax error in `client.js`.
 
-## Mutliple Entry Points Example
+## Multiple Entry Points Example
 
 There is also an example for multiple entry points in webpack.
 
