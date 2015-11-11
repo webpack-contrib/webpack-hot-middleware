@@ -109,11 +109,8 @@ function processMessage(obj) {
     if (obj.errors.length > 0) {
       problems('errors', obj);
     } else {
-      if (obj.warnings.length > 0) {
-        problems('warnings', obj);
-      } else {
-        success();
-      }
+      if (obj.warnings.length > 0) problems('warnings', obj);
+      success();
 
       processUpdate(obj.hash, obj.modules, options);
     }
