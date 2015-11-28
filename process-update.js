@@ -99,7 +99,9 @@ module.exports = function(hash, moduleMap, options) {
   }
 
   function performReload() {
-    if (options.warn) console.warn("[HMR] Reloading page");
-    if (reload) window.location.reload();
+    if (reload) {
+      if (options.warn) console.warn("[HMR] Reloading page");
+      window.location.reload();
+    }
   }
 };
