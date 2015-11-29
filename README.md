@@ -113,6 +113,17 @@ entry: {
 }
 ```
 
+### Use with koa
+
+```js
+var app = koa();
+
+app.use(function* (next) {
+  yield require("webpack-hot-middleware")(compiler).bind(null, this.req, this.res);
+  yield next;
+});
+```
+
 ## License
 
 Copyright 2015 Glen Mailer.
