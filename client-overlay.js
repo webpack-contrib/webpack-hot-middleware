@@ -4,8 +4,11 @@ var clientOverlay = document.createElement('div');
 clientOverlay.style.display = 'none';
 clientOverlay.style.background = '#fdd';
 clientOverlay.style.color = '#000';
+clientOverlay.style.whiteSpace = 'pre';
+clientOverlay.style.fontFamily = 'monospace';
 clientOverlay.style.position = 'fixed';
 clientOverlay.style.zIndex = 9999;
+clientOverlay.style.padding = '10px';
 clientOverlay.style.left = 0;
 clientOverlay.style.right = 0;
 clientOverlay.style.top = 0;
@@ -21,9 +24,9 @@ function showProblems(lines) {
   clientOverlay.innerHTML = '';
   clientOverlay.style.display = 'block';
   lines.forEach(function(msg) {
-    var pre = document.createElement('pre');
-    pre.textContent = msg;
-    clientOverlay.appendChild(pre);
+    var div = document.createElement('div');
+    div.textContent = msg;
+    clientOverlay.appendChild(div);
   });
 };
 
