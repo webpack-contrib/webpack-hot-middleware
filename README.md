@@ -88,6 +88,23 @@ Each connected client gets a [Server Sent Events](http://www.html5rocks.com/en/t
 
 When the client receives a message, it will check to see if the local code is up to date. If it isn't up to date, it will trigger webpack hot module reloading.
 
+## Other Frameworks
+
+### Hapi
+
+Use the [hapi-webpack-plugin](https://www.npmjs.com/package/hapi-webpack-plugin).
+
+### Koa
+
+```js
+var app = koa();
+
+app.use(function* (next) {
+  yield require("webpack-hot-middleware")(compiler).bind(null, this.req, this.res);
+  yield next;
+});
+```
+
 ## Troubleshooting
 
 ### Use on browsers without EventSource
@@ -111,17 +128,6 @@ entry: {
     vendor: ['jquery', 'webpack-hot-middleware/client'],
     index: ['./src/index', 'webpack-hot-middleware/client']
 }
-```
-
-### Use with koa
-
-```js
-var app = koa();
-
-app.use(function* (next) {
-  yield require("webpack-hot-middleware")(compiler).bind(null, this.req, this.res);
-  yield next;
-});
 ```
 
 ## License
