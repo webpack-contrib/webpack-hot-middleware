@@ -34,11 +34,11 @@ if (typeof window === 'undefined') {
     "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools"
   );
 } else {
-  connect();
+  connect(window.EventSource);
 }
 
-function connect() {
-  var source = new window.EventSource(options.path);
+function connect(EventSource) {
+  var source = new EventSource(options.path);
   var lastActivity = new Date();
 
   source.onopen = handleOnline;
@@ -73,7 +73,7 @@ function connect() {
   function handleDisconnect() {
     clearInterval(timer);
     source.close();
-    setTimeout(connect, options.timeout);
+    setTimeout(function() { connect(EventSource); }, options.timeout);
   }
 
 }
@@ -81,7 +81,7 @@ function connect() {
 var strip = require('strip-ansi');
 
 var overlay;
-if (typeof document !== 'undefined' && options.overlay) {
+if (options.overlay) {
   overlay = require('./client-overlay');
 }
 
