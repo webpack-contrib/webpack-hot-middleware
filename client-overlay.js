@@ -15,7 +15,7 @@ clientOverlay.style.top = 0;
 clientOverlay.style.bottom = 0;
 clientOverlay.style.overflow = 'auto';
 
-if (typeof document !== 'undefined' && document.body) {
+if (document.body) {
   document.body.appendChild(clientOverlay);
 }
 
