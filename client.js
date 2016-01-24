@@ -25,7 +25,9 @@ if (__resourceQuery) {
   }
 }
 
-if (typeof window.EventSource === 'undefined') {
+if (typeof window === 'undefined') {
+  // do nothing
+} else if (typeof window.EventSource === 'undefined') {
   console.warn(
     "webpack-hot-middleware's client requires EventSource to work. " +
     "You should include a polyfill if you want to support this browser: " +
@@ -79,7 +81,7 @@ function connect() {
 var strip = require('strip-ansi');
 
 var overlay;
-if (options.overlay) {
+if (typeof document !== 'undefined' && options.overlay) {
   overlay = require('./client-overlay');
 }
 
