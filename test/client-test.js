@@ -3,10 +3,24 @@
 var sinon = require('sinon');
 
 describe("client", function() {
-  var client, clientOverlay, processUpdate;
+  var s, client, clientOverlay, processUpdate;
+
+  beforeEach(function() {
+    s = sinon.sandbox.create();
+  });
+  afterEach(function() {
+    s.restore();
+  });
 
   context("with default options", function() {
-    beforeEach(setup());
+    beforeEach(function setup() {
+      global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
+      global.window = {
+        EventSource: sinon.stub().returns({
+          close: sinon.spy()
+        })
+      };
+    });
     beforeEach(loadClient);
     it("should connect to __webpack_hmr", function() {
       sinon.assert.calledOnce(window.EventSource);
@@ -41,6 +55,30 @@ describe("client", function() {
     it("should test more of the client's functionality");
   });
 
+  context("with no browser environment", function() {
+    beforeEach(function setup() {
+      global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
+      delete global.window;
+    });
+    beforeEach(loadClient);
+    it("should not connect", function() {
+      // doesn't error
+    });
+  });
+
+  context("with no EventSource", function() {
+    beforeEach(function setup() {
+      global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
+      global.window = {};
+      s.stub(console, 'warn');
+    });
+    beforeEach(loadClient);
+    it("should emit warning and not connect", function() {
+      sinon.assert.calledOnce(console.warn);
+      sinon.assert.calledWithMatch(console.warn, /EventSource/);
+    });
+  });
+
   function makeMessage(obj) {
     return { data: typeof obj === 'string' ? obj : JSON.stringify(obj) };
   }
@@ -66,16 +104,4 @@ describe("client", function() {
     delete require.cache[require.resolve('../client-overlay')];
     delete require.cache[require.resolve('../process-update')];
   });
-
-  function setup(options) {
-    options = options || {};
-    return function() {
-      global.__resourceQuery = options.resourceQuery || ''; // eslint-disable-line no-underscore-dangle, max-len
-      global.window = {
-        EventSource: sinon.stub().returns({
-          close: sinon.spy()
-        })
-      };
-    };
-  }
 });
