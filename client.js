@@ -81,7 +81,7 @@ function connect(EventSource) {
 var strip = require('strip-ansi');
 
 var overlay;
-if (options.overlay) {
+if (typeof document !== 'undefined' && options.overlay) {
   overlay = require('./client-overlay');
 }
 
