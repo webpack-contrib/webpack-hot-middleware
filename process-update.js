@@ -10,6 +10,8 @@ if (!module.hot) {
   throw new Error("[HMR] Hot Module Replacement is disabled.");
 }
 
+var hmrDocsUrl = "http://webpack.github.io/docs/hot-module-replacement-with-webpack.html"; // eslint-disable-line max-len
+
 var lastHash;
 var failureStatuses = { abort: 1, fail: 1 };
 var applyOptions = { ignoreUnaccepted: true };
@@ -58,7 +60,10 @@ module.exports = function(hash, moduleMap, options) {
       if (options.warn) {
         console.warn(
           "[HMR] The following modules couldn't be hot updated: " +
-          "(Full reload needed)"
+          "(Full reload needed)\n" +
+          "This is usually because the modules which have changed " +
+          "(and their parents) do not know how to hot reload themselves. " +
+          "See " + hmrDocsUrl + " for more details."
         );
         unacceptedModules.forEach(function(moduleId) {
           console.warn("[HMR]  - " + moduleMap[moduleId]);
