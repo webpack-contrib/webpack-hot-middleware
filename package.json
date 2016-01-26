@@ -15,7 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "querystring": "^0.2.0",
-    "strip-ansi": "^2.0.1"
+    "strip-ansi": "^3.0.0"
   },
   "devDependencies": {
     "express": "^4.13.3",
@@ -23,6 +23,6 @@
     "supertest": "^1.1.0",
     "sinon": "^1.12.2",
     "coveralls": "^2.11.2",
-    "istanbul": "^0.3.14"
+    "istanbul": "^0.4.2"
   }
 }
