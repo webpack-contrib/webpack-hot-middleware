@@ -19,11 +19,13 @@ Next, enable hot reloading in your webpack config:
  1. Add the following three plugins to the `plugins` array:
     ```js
     plugins: [
-        new webpack.optimize.OccurenceOrderPlugin(),
+        new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin()
     ]
     ```
+    *NOTE:* In Webpack <2.0.0 change to `new webpack.optimize.OccurenceOrderPlugin()`
+
     Occurence ensures consistent build hashes, hot module replacement is
     somewhat self-explanatory, no errors is used to handle errors more cleanly.
 
