@@ -18,10 +18,12 @@ function webpackHotMiddleware(compiler, opts) {
     statsResult = statsResult.toJson();
 
     //for multi-compiler, stats will be an object with a 'children' array of stats
-    var children = statsResult.children ? statsResult.children : [statsResult];
+    var children = statsResult.children && statsResult.children.length ?
+      statsResult.children : [statsResult];
     children.forEach(function(stats) {
       if (opts.log) {
-        opts.log("webpack built " + stats.hash + " in " + stats.time + "ms");
+        opts.log("webpack built " + (stats.name ? stats.name + " " : "") +
+          stats.hash + " in " + stats.time + "ms");
       }
       eventStream.publish({
         action: "built",
