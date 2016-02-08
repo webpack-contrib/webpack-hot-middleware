@@ -14,18 +14,23 @@ function webpackHotMiddleware(compiler, opts) {
     if (opts.log) opts.log("webpack building...");
     eventStream.publish({action: "building"});
   });
-  compiler.plugin("done", function(stats) {
-    stats = stats.toJson();
-    if (opts.log) {
-      opts.log("webpack built " + stats.hash + " in " + stats.time + "ms");
-    }
-    eventStream.publish({
-      action: "built",
-      time: stats.time,
-      hash: stats.hash,
-      warnings: stats.warnings || [],
-      errors: stats.errors || [],
-      modules: buildModuleMap(stats.modules)
+  compiler.plugin("done", function(statsResult) {
+    statsResult = statsResult.toJson();
+
+    //for multi-compiler, stats will be an object with a 'children' array of stats
+    var children = statsResult.children ? statsResult.children : [statsResult];
+    children.forEach(function(stats) {
+      if (opts.log) {
+        opts.log("webpack built " + stats.hash + " in " + stats.time + "ms");
+      }
+      eventStream.publish({
+        action: "built",
+        time: stats.time,
+        hash: stats.hash,
+        warnings: stats.warnings || [],
+        errors: stats.errors || [],
+        modules: buildModuleMap(stats.modules)
+      });
     });
   });
   var middleware = function(req, res, next) {
