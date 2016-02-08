@@ -84,6 +84,40 @@ describe("middleware", function() {
           }
         });
     });
+    it("should notify clients when bundle is complete (multicompiler)", function(done) {
+      request('/__webpack_hmr')
+        .end(function(err, res) {
+          if (err) return done(err);
+
+          res.on('data', verify);
+
+          compiler.emit("done", stats({
+            children: [
+              {
+                time: 100,
+                hash: "deadbeeffeddad",
+                warnings: false,
+                errors: false,
+                modules: []
+              },
+              {
+                time: 150,
+                hash: "gwegawefawefawef",
+                warnings: false,
+                errors: false,
+                modules: []
+              }
+            ]
+          }));
+
+          function verify() {
+            assert.equal(res.events.length, 1);
+            var event = JSON.parse(res.events[0].substring(5));
+            assert.equal(event.action, "built");
+            done();
+          }
+        });
+    });
     it("should have tests on the payload of bundle complete");
     it("should notify all clients", function(done) {
       request('/__webpack_hmr')
