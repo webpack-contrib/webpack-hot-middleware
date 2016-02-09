@@ -26,6 +26,7 @@ function webpackHotMiddleware(compiler, opts) {
           stats.hash + " in " + stats.time + "ms");
       }
       eventStream.publish({
+        name: stats.name,
         action: "built",
         time: stats.time,
         hash: stats.hash,
