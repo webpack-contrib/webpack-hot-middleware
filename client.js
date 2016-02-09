@@ -107,7 +107,7 @@ function processMessage(obj) {
   if (obj.action == "building") {
     if (options.log) console.log("[HMR] bundle rebuilding");
   } else if (obj.action == "built") {
-    if (options.log) console.log("[HMR] bundle rebuilt in " + obj.time + "ms");
+    if (options.log) console.log("[HMR] bundle " + (obj.name ? obj.name + " " : "") + "rebuilt in " + obj.time + "ms");
     if (obj.errors.length > 0) {
       problems('errors', obj);
     } else {
