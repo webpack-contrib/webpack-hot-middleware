@@ -125,6 +125,9 @@ if (module) {
   module.exports = {
     subscribe: function subscribe(handler) {
       customHandler = handler;
+    },
+    useCustomOverlay: function useCustomOverlay(customOverlay) {
+      overlay = customOverlay;
     }
   };
 }
