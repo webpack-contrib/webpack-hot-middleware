@@ -79,6 +79,10 @@ function connect(EventSource) {
 }
 
 var strip = require('strip-ansi');
+var Ansi = require('ansi-to-html-umd');
+var ansi = new Ansi({
+  escapeXML: true
+});
 
 var overlay;
 if (typeof document !== 'undefined' && options.overlay) {
@@ -89,9 +93,8 @@ function problems(type, obj) {
   if (options.warn) console.warn("[HMR] bundle has " + type + ":");
   var list = [];
   obj[type].forEach(function(msg) {
-    var clean = strip(msg);
-    if (options.warn) console.warn("[HMR] " + clean);
-    list.push(clean);
+    if (options.warn) console.warn("[HMR] " + strip(msg));
+    list.push(ansi.toHtml(msg));
   });
   if (overlay && type !== 'warnings') overlay.showProblems(list);
 }
