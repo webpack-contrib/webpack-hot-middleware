@@ -80,7 +80,9 @@ function connect(EventSource) {
 
 var strip = require('strip-ansi');
 var Ansi = require('ansi-to-html-umd');
-var ansi = new Ansi();
+var ansi = new Ansi({
+  escapeXML: true
+});
 
 var overlay;
 if (typeof document !== 'undefined' && options.overlay) {
