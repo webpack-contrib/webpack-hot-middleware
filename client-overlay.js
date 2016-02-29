@@ -6,6 +6,7 @@ clientOverlay.style.background = '#111';
 clientOverlay.style.color = '#fff';
 clientOverlay.style.whiteSpace = 'pre';
 clientOverlay.style.fontFamily = 'monospace';
+clientOverlay.style.fontSize = '16px';
 clientOverlay.style.position = 'fixed';
 clientOverlay.style.zIndex = 9999;
 clientOverlay.style.padding = '10px';

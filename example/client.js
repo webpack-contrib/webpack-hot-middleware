@@ -20,7 +20,7 @@ app.style.verticalAlign = 'middle';
 
 // Uncomment one of the following lines to see error handling
 // require('unknown-module')
-// a = /regex/q
+// } syntax-error
 
 if (module.hot) {
   module.hot.accept();
