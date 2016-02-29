@@ -2,8 +2,8 @@
 
 var clientOverlay = document.createElement('div');
 clientOverlay.style.display = 'none';
-clientOverlay.style.background = '#fdd';
-clientOverlay.style.color = '#000';
+clientOverlay.style.background = '#111';
+clientOverlay.style.color = '#fff';
 clientOverlay.style.whiteSpace = 'pre';
 clientOverlay.style.fontFamily = 'monospace';
 clientOverlay.style.position = 'fixed';
@@ -25,7 +25,7 @@ function showProblems(lines) {
   clientOverlay.style.display = 'block';
   lines.forEach(function(msg) {
     var div = document.createElement('div');
-    div.textContent = msg;
+    div.innerHTML = msg;
     clientOverlay.appendChild(div);
   });
 };
