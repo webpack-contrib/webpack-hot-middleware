@@ -15,10 +15,10 @@
   "license": "MIT",
   "dependencies": {
     "querystring": "^0.2.0",
-    "strip-ansi": "^3.0.0"
+    "strip-ansi": "^3.0.0",
+    "ansi-to-html-umd": "^0.4.2"
   },
   "devDependencies": {
-    "ansi-to-html-umd": "^0.4.2",
     "express": "^4.13.3",
     "mocha": "^2.3.2",
     "supertest": "^1.1.0",
