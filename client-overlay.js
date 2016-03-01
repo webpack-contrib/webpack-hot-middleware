@@ -20,13 +20,18 @@ if (document.body) {
   document.body.appendChild(clientOverlay);
 }
 
+var Ansi = require('ansi-to-html-umd');
+var ansi = new Ansi({
+  escapeXML: true
+});
+
 exports.showProblems =
 function showProblems(lines) {
   clientOverlay.innerHTML = '';
   clientOverlay.style.display = 'block';
   lines.forEach(function(msg) {
     var div = document.createElement('div');
-    div.innerHTML = msg;
+    div.innerHTML = ansi.toHtml(msg);
     clientOverlay.appendChild(div);
   });
 };
