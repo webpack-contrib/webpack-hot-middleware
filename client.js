@@ -79,10 +79,6 @@ function connect(EventSource) {
 }
 
 var strip = require('strip-ansi');
-var Ansi = require('ansi-to-html-umd');
-var ansi = new Ansi({
-  escapeXML: true
-});
 
 var overlay;
 if (typeof document !== 'undefined' && options.overlay) {
@@ -90,13 +86,13 @@ if (typeof document !== 'undefined' && options.overlay) {
 }
 
 function problems(type, obj) {
-  if (options.warn) console.warn("[HMR] bundle has " + type + ":");
-  var list = [];
-  obj[type].forEach(function(msg) {
-    if (options.warn) console.warn("[HMR] " + strip(msg));
-    list.push(ansi.toHtml(msg));
-  });
-  if (overlay && type !== 'warnings') overlay.showProblems(list);
+  if (options.warn) {
+    console.warn("[HMR] bundle has " + type + ":");
+    obj[type].forEach(function(msg) {
+      console.warn("[HMR] " + strip(msg));
+    });
+  }
+  if (overlay && type !== 'warnings') overlay.showProblems(type, obj[type]);
 }
 
 function success() {
