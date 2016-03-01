@@ -92,7 +92,7 @@ function problems(type, obj) {
       console.warn("[HMR] " + strip(msg));
     });
   }
-  if (overlay && type !== 'warnings') overlay.showProblems(obj[type]);
+  if (overlay && type !== 'warnings') overlay.showProblems(type, obj[type]);
 }
 
 function success() {
