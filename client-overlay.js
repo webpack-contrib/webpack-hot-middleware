@@ -41,14 +41,18 @@ var colors = {
 };
 ansiHTML.setColors(colors);
 
+var Entities = require('html-entities').AllHtmlEntities;
+var entities = new Entities();
+
 exports.showProblems =
 function showProblems(type, lines) {
   clientOverlay.innerHTML = '';
   clientOverlay.style.display = 'block';
   lines.forEach(function(msg) {
+    msg = ansiHTML(entities.encode(msg));
     var div = document.createElement('div');
     div.style.marginBottom = '2rem';
-    div.innerHTML = problemType(type) + ' in ' + ansiHTML(msg);
+    div.innerHTML = problemType(type) + ' in ' + msg;
     clientOverlay.appendChild(div);
   });
 };
