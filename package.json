@@ -15,6 +15,7 @@
   "license": "MIT",
   "dependencies": {
     "ansi-html": "0.0.5",
+    "html-entities": "^1.2.0",
     "querystring": "^0.2.0",
     "strip-ansi": "^3.0.0"
   },
