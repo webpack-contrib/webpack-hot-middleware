@@ -5,7 +5,7 @@ var styles = {
   display: 'none',
   background: 'rgba(0,0,0,0.85)',
   color: '#E8E8E8',
-  lineHeight: '1.2rem',
+  lineHeight: '1.2',
   whiteSpace: 'pre',
   fontFamily: 'Menlo, Consolas, monospace',
   fontSize: '13px',
@@ -51,7 +51,7 @@ function showProblems(type, lines) {
   lines.forEach(function(msg) {
     msg = ansiHTML(entities.encode(msg));
     var div = document.createElement('div');
-    div.style.marginBottom = '2rem';
+    div.style.marginBottom = '26px';
     div.innerHTML = problemType(type) + ' in ' + msg;
     clientOverlay.appendChild(div);
   });
