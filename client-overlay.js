@@ -51,7 +51,7 @@ function showProblems(type, lines) {
   lines.forEach(function(msg) {
     msg = ansiHTML(entities.encode(msg));
     var div = document.createElement('div');
-    div.style.marginBottom = '2rem';
+    div.style.marginBottom = '26px';
     div.innerHTML = problemType(type) + ' in ' + msg;
     clientOverlay.appendChild(div);
   });
