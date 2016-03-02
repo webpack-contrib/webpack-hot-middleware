@@ -5,7 +5,7 @@ var styles = {
   display: 'none',
   background: 'rgba(0,0,0,0.85)',
   color: '#E8E8E8',
-  lineHeight: '1.2rem',
+  lineHeight: '1.2',
   whiteSpace: 'pre',
   fontFamily: 'Menlo, Consolas, monospace',
   fontSize: '13px',
