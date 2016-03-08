@@ -29,7 +29,7 @@ module.exports = function(hash, moduleMap, options) {
   }
 
   function check() {
-    module.hot.check(function(err, updatedModules) {
+    var cb = function(err, updatedModules) {
       if (err) return handleError(err);
 
       if(!updatedModules) {
@@ -48,7 +48,15 @@ module.exports = function(hash, moduleMap, options) {
 
         logUpdates(updatedModules, renewedModules);
       });
-    });
+    };
+    var result = module.hot.check(false, cb);
+    // webpack 2 promise
+    if (result && result.then) {
+        result.then(function(updatedModules) {
+            cb(null, updatedModules);
+        });
+        result.catch(cb);
+    }
   }
 
   function logUpdates(updatedModules, renewedModules) {
