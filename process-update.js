@@ -41,14 +41,26 @@ module.exports = function(hash, moduleMap, options) {
         return null;
       }
 
-      module.hot.apply(applyOptions, function(applyErr, renewedModules) {
+      var applyCallback = function(applyErr, renewedModules) {
         if (applyErr) return handleError(applyErr);
 
         if (!upToDate()) check();
 
         logUpdates(updatedModules, renewedModules);
-      });
+      };
+
+      var applyResult = module.hot.apply(applyOptions, applyCallback);
+      // webpack 2 promise
+      if (applyResult && applyResult.then) {
+        // HotModuleReplacement.runtime.js refers to the result as `outdatedModules`
+        applyResult.then(function(outdatedModules) {
+          applyCallback(null, outdatedModules);
+        });
+        applyResult.catch(applyCallback);
+      }
+
     };
+
     var result = module.hot.check(false, cb);
     // webpack 2 promise
     if (result && result.then) {
