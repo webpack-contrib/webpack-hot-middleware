@@ -79,9 +79,13 @@ function connect(EventSource) {
 }
 
 var reporter;
-// the reporter needs to be a singleton on the page.
-if (typeof window !== 'undefined' && !window.__webpack_hot_middleware_reporter__) {
-  reporter = window.__webpack_hot_middleware_reporter__ = createReporter();
+// the reporter needs to be a singleton on the page
+// in case the client is being used by mutliple bundles
+// we only want to report once.
+// all the errors will go to all clients
+var singletonKey = '__webpack_hot_middleware_reporter__';
+if (typeof window !== 'undefined' && !window[singletonKey]) {
+  reporter = window[singletonKey] = createReporter();
 }
 
 function createReporter() {
@@ -102,9 +106,11 @@ function createReporter() {
       }
       if (overlay && type !== 'warnings') overlay.showProblems(type, obj[type]);
     },
-
     success: function() {
       if (overlay) overlay.clear();
+    },
+    useCustomOverlay: function(customOverlay) {
+      overlay = customOverlay;
     }
   };
 }
@@ -116,7 +122,12 @@ function processMessage(obj) {
   if (obj.action == "building") {
     if (options.log) console.log("[HMR] bundle rebuilding");
   } else if (obj.action == "built") {
-    if (options.log) console.log("[HMR] bundle " + (obj.name ? obj.name + " " : "") + "rebuilt in " + obj.time + "ms");
+    if (options.log) {
+      console.log(
+        "[HMR] bundle " + (obj.name ? obj.name + " " : "") +
+        "rebuilt in " + obj.time + "ms"
+      );
+    }
     if (obj.errors.length > 0) {
       if (reporter) reporter.problems('errors', obj);
     } else {
@@ -138,7 +149,7 @@ if (module) {
       customHandler = handler;
     },
     useCustomOverlay: function useCustomOverlay(customOverlay) {
-      overlay = customOverlay;
+      if (reporter) reporter.useCustomOverlay(customOverlay);
     }
   };
 }
