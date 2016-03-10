@@ -78,25 +78,35 @@ function connect(EventSource) {
 
 }
 
-var strip = require('strip-ansi');
-
-var overlay;
-if (typeof document !== 'undefined' && options.overlay) {
-  overlay = require('./client-overlay');
+var reporter;
+// the reporter needs to be a singleton on the page.
+if (typeof window !== 'undefined' && !window.__webpack_hot_middleware_reporter__) {
+  reporter = window.__webpack_hot_middleware_reporter__ = createReporter();
 }
 
-function problems(type, obj) {
-  if (options.warn) {
-    console.warn("[HMR] bundle has " + type + ":");
-    obj[type].forEach(function(msg) {
-      console.warn("[HMR] " + strip(msg));
-    });
+function createReporter() {
+  var strip = require('strip-ansi');
+
+  var overlay;
+  if (typeof document !== 'undefined' && options.overlay) {
+    overlay = require('./client-overlay');
   }
-  if (overlay && type !== 'warnings') overlay.showProblems(type, obj[type]);
-}
 
-function success() {
-  if (overlay) overlay.clear();
+  return {
+    problems: function(type, obj) {
+      if (options.warn) {
+        console.warn("[HMR] bundle has " + type + ":");
+        obj[type].forEach(function(msg) {
+          console.warn("[HMR] " + strip(msg));
+        });
+      }
+      if (overlay && type !== 'warnings') overlay.showProblems(type, obj[type]);
+    },
+
+    success: function() {
+      if (overlay) overlay.clear();
+    }
+  };
 }
 
 var processUpdate = require('./process-update');
@@ -108,10 +118,12 @@ function processMessage(obj) {
   } else if (obj.action == "built") {
     if (options.log) console.log("[HMR] bundle " + (obj.name ? obj.name + " " : "") + "rebuilt in " + obj.time + "ms");
     if (obj.errors.length > 0) {
-      problems('errors', obj);
+      if (reporter) reporter.problems('errors', obj);
     } else {
-      if (obj.warnings.length > 0) problems('warnings', obj);
-      success();
+      if (reporter) {
+        if (obj.warnings.length > 0) reporter.problems('warnings', obj);
+        reporter.success();
+      }
 
       processUpdate(obj.hash, obj.modules, options);
     }
