@@ -2,7 +2,6 @@
 
 var clientOverlay = document.createElement('div');
 var styles = {
-  display: 'none',
   background: 'rgba(0,0,0,0.85)',
   color: '#E8E8E8',
   lineHeight: '1.2',
@@ -20,10 +19,6 @@ var styles = {
 };
 for (var key in styles) {
   clientOverlay.style[key] = styles[key];
-}
-
-if (document.body) {
-  document.body.appendChild(clientOverlay);
 }
 
 var ansiHTML = require('ansi-html');
@@ -47,7 +42,6 @@ var entities = new Entities();
 exports.showProblems =
 function showProblems(type, lines) {
   clientOverlay.innerHTML = '';
-  clientOverlay.style.display = 'block';
   lines.forEach(function(msg) {
     msg = ansiHTML(entities.encode(msg));
     var div = document.createElement('div');
@@ -55,12 +49,16 @@ function showProblems(type, lines) {
     div.innerHTML = problemType(type) + ' in ' + msg;
     clientOverlay.appendChild(div);
   });
+  if (document.body) {
+    document.body.appendChild(clientOverlay);
+  }
 };
 
 exports.clear =
 function clear() {
-  clientOverlay.innerHTML = '';
-  clientOverlay.style.display = 'none';
+  if (document.body && clientOverlay.parentNode) {
+    document.body.removeChild(clientOverlay);
+  }
 };
 
 var problemColors = {
