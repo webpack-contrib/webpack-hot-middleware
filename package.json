@@ -2,6 +2,16 @@
   "name": "webpack-hot-middleware",
   "version": "2.10.0",
   "description": "Webpack hot reloading you can attach to your own server",
+  "keywords": [
+    "webpack",
+    "hmr",
+    "hot",
+    "module",
+    "reloading",
+    "hot-reloading",
+    "middleware",
+    "express"
+  ],
   "main": "middleware.js",
   "scripts": {
     "test": "mocha",
