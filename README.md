@@ -103,8 +103,9 @@ Use the [hapi-webpack-plugin](https://www.npmjs.com/package/hapi-webpack-plugin)
 ```js
 var app = koa();
 
+var hotMiddleware = require("webpack-hot-middleware")(compiler);
 app.use(function* (next) {
-  yield require("webpack-hot-middleware")(compiler).bind(null, this.req, this.res);
+  yield hotMiddleware.bind(null, this.req, this.res);
   yield next;
 });
 ```
