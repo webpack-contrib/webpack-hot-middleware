@@ -107,7 +107,7 @@ var app = koa();
 
 var hotMiddleware = require("webpack-hot-middleware")(compiler);
 app.use(function* (next) {
-  yield hotMiddleware.bind(null, this.req, this.res);
+  yield hotMiddleware.bind(null, this.request, this.response);
   yield next;
 });
 ```
