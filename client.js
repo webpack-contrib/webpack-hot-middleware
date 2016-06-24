@@ -1,5 +1,5 @@
 /*eslint-env browser*/
-/*global __resourceQuery*/
+/*global __resourceQuery __webpack_public_path__*/
 
 var options = {
   path: "/__webpack_hmr",
@@ -22,6 +22,9 @@ if (__resourceQuery) {
   if (overrides.quiet && overrides.quiet !== 'false') {
     options.log = false;
     options.warn = false;
+  }
+  if (overrides.dynamicPublicPath) {
+    options.path = __webpack_public_path__ + options.path;
   }
 }
 
