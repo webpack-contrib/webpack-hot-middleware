@@ -121,6 +121,7 @@ function createReporter() {
 var processUpdate = require('./process-update');
 
 var customHandler;
+var subscribeAllHandler;
 function processMessage(obj) {
   if (obj.action == "building") {
     if (options.log) console.log("[HMR] bundle rebuilding");
@@ -144,10 +145,17 @@ function processMessage(obj) {
   } else if (customHandler) {
     customHandler(obj);
   }
+
+  if (subscribeAllHandler) {
+    subscribeAllHandler(obj);
+  }
 }
 
 if (module) {
   module.exports = {
+    subscribeAll: function subscribeAll(handler) {
+      subscribeAllHandler = handler;
+    },
     subscribe: function subscribe(handler) {
       customHandler = handler;
     },
