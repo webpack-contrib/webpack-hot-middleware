@@ -39,6 +39,36 @@ describe("client", function() {
       }));
       sinon.assert.calledOnce(processUpdate);
     });
+    it("should call subscribeAll handler on default messages", function() {
+      var spy = sinon.spy();
+      client.subscribeAll(spy);
+      var message = {
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: [],
+        modules: []
+      };
+
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage(message));
+
+      sinon.assert.calledOnce(spy);
+      sinon.assert.calledWith(spy, message);
+    });
+    it("should call subscribeAll handler on custom messages", function() {
+      var spy = sinon.spy();
+      client.subscribeAll(spy);
+
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'thingy'
+      }));
+
+      sinon.assert.calledOnce(spy);
+      sinon.assert.calledWith(spy, { action: 'thingy' });
+    });
     it("should call only custom handler on custom messages", function() {
       var spy = sinon.spy();
       client.subscribe(spy);
@@ -46,6 +76,9 @@ describe("client", function() {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(makeMessage({
         custom: 'thingy'
+      }));
+      eventSource.onmessage(makeMessage({
+        action: 'built'
       }));
 
       sinon.assert.calledOnce(spy);
