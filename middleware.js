@@ -62,7 +62,6 @@ function createEventStream(heartbeat) {
       res.writeHead(200, {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'text/event-stream;charset=utf-8',
-        'Transfer-Encoding': 'chunked',
         'Cache-Control': 'no-cache, no-transform',
         'Connection': 'keep-alive'
       });
