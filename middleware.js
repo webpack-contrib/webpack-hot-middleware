@@ -39,6 +39,11 @@ function webpackHotMiddleware(compiler, opts) {
     if (!pathMatch(req.url, opts.path)) return next();
     eventStream.handler(req, res);
   };
+  var koaMiddleware = function*(next) {
+    if (!pathMatch(this.url, opts.path)) return yield next;
+    eventStream.handler(this.req, this.res);
+  }
+  middleware = !opts.koa ? middleware : koaMiddleware;
   middleware.publish = eventStream.publish;
   return middleware;
 }
