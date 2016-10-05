@@ -29,7 +29,7 @@ describe("client", function() {
     });
     it("should trigger webpack on successful builds / syncs", function() {
       const actions = ['built', 'sync'];
-      actions.forEach(function(action, i) {
+      actions.forEach(function(action) {
         var eventSource = window.EventSource.lastCall.returnValue;
         eventSource.onmessage(makeMessage({
           action: action,
