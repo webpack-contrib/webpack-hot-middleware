@@ -9,7 +9,7 @@ function webpackHotMiddleware(compiler, opts) {
   opts.path = opts.path || '/__webpack_hmr';
   opts.heartbeat = opts.heartbeat || 10 * 1000;
 
-  var eventStream = createEventStream(opts);
+  var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
 
   compiler.plugin("compile", function() {
@@ -35,7 +35,7 @@ function webpackHotMiddleware(compiler, opts) {
   return middleware;
 }
 
-function createEventStream(opts) {
+function createEventStream(heartbeat) {
   var clientId = 0;
   var clients = {};
   function everyClient(fn) {
@@ -47,7 +47,7 @@ function createEventStream(opts) {
     everyClient(function(client) {
       client.write("data: \uD83D\uDC93\n\n");
     });
-  }, opts.heartbeat).unref();
+  }, heartbeat).unref();
   return {
     handler: function(req, res) {
       req.socket.setKeepAlive(true);
