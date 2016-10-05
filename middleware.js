@@ -2,6 +2,7 @@ module.exports = webpackHotMiddleware;
 
 var helpers = require('./helpers');
 var pathMatch = helpers.pathMatch;
+var latestStats;
 
 function webpackHotMiddleware(compiler, opts) {
   opts = opts || {};
@@ -9,31 +10,14 @@ function webpackHotMiddleware(compiler, opts) {
   opts.path = opts.path || '/__webpack_hmr';
   opts.heartbeat = opts.heartbeat || 10 * 1000;
 
-  var eventStream = createEventStream(opts.heartbeat);
+  var eventStream = createEventStream(opts);
   compiler.plugin("compile", function() {
     if (opts.log) opts.log("webpack building...");
     eventStream.publish({action: "building"});
   });
-  compiler.plugin("done", function(statsResult) {
-    statsResult = statsResult.toJson();
-
-    //for multi-compiler, stats will be an object with a 'children' array of stats
-    var bundles = extractBundles(statsResult);
-    bundles.forEach(function(stats) {
-      if (opts.log) {
-        opts.log("webpack built " + (stats.name ? stats.name + " " : "") +
-          stats.hash + " in " + stats.time + "ms");
-      }
-      eventStream.publish({
-        name: stats.name,
-        action: "built",
-        time: stats.time,
-        hash: stats.hash,
-        warnings: stats.warnings || [],
-        errors: stats.errors || [],
-        modules: buildModuleMap(stats.modules)
-      });
-    });
+  compiler.plugin("done", (stats) => {
+      latestStats = stats;
+      publishBuilt(stats, opts, eventStream);
   });
   var middleware = function(req, res, next) {
     if (!pathMatch(req.url, opts.path)) return next();
@@ -43,7 +27,7 @@ function webpackHotMiddleware(compiler, opts) {
   return middleware;
 }
 
-function createEventStream(heartbeat) {
+function createEventStream(opts) {
   var clientId = 0;
   var clients = {};
   function everyClient(fn) {
@@ -55,7 +39,7 @@ function createEventStream(heartbeat) {
     everyClient(function(client) {
       client.write("data: \uD83D\uDC93\n\n");
     });
-  }, heartbeat).unref();
+}, opts.heartbeat).unref();
   return {
     handler: function(req, res) {
       req.socket.setKeepAlive(true);
@@ -68,6 +52,7 @@ function createEventStream(heartbeat) {
       res.write('\n');
       var id = clientId++;
       clients[id] = res;
+      publishBuilt(latestStats, opts, this);
       req.on("close", function(){
         delete clients[id];
       });
@@ -97,4 +82,29 @@ function buildModuleMap(modules) {
     map[module.id] = module.name;
   });
   return map;
+}
+
+function publishBuilt(statsResult, opts, eventStream) {
+  statsResult = statsResult.toJson();
+
+  //for multi-compiler, stats will be an object with a 'children' array of stats
+  var bundles = extractBundles(statsResult);
+  if (!Array.isArray(bundles)) {
+      return;
+  }
+  bundles.forEach(function(stats) {
+    if (opts.log) {
+      opts.log("webpack built " + (stats.name ? stats.name + " " : "") +
+        stats.hash + " in " + stats.time + "ms");
+    }
+    eventStream.publish({
+      name: stats.name,
+      action: "built",
+      time: stats.time,
+      hash: stats.hash,
+      warnings: stats.warnings || [],
+      errors: stats.errors || [],
+      modules: buildModuleMap(stats.modules)
+    });
+  });
 }
