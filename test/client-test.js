@@ -27,17 +27,21 @@ describe("client", function() {
       sinon.assert.calledWithNew(window.EventSource);
       sinon.assert.calledWith(window.EventSource, '/__webpack_hmr');
     });
-    it("should trigger webpack on successful builds", function() {
-      var eventSource = window.EventSource.lastCall.returnValue;
-      eventSource.onmessage(makeMessage({
-        action: 'built',
-        time: 100,
-        hash: 'deadbeeffeddad',
-        errors: [],
-        warnings: [],
-        modules: []
-      }));
-      sinon.assert.calledOnce(processUpdate);
+    it("should trigger webpack on successful builds / syncs", function() {
+      const actions = ['built', 'sync'];
+      actions.forEach(function(action, i) {
+        var eventSource = window.EventSource.lastCall.returnValue;
+        eventSource.onmessage(makeMessage({
+          action: action,
+          time: 100,
+          hash: 'deadbeeffeddad',
+          errors: [],
+          warnings: [],
+          modules: []
+        }));
+        sinon.assert.calledOnce(processUpdate);
+        processUpdate.reset();
+      });
     });
     it("should call subscribeAll handler on default messages", function() {
       var spy = sinon.spy();
