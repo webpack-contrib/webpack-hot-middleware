@@ -13,12 +13,12 @@ function webpackHotMiddleware(compiler, opts) {
   var latestStats = null;
 
   compiler.plugin("compile", function() {
-    // Keep hold of latest stats so they can be propagated to new clients
     latestStats = null;
     if (opts.log) opts.log("webpack building...");
     eventStream.publish({action: "building"});
   });
   compiler.plugin("done", function(statsResult) {
+    // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
     publishStats("built", latestStats, eventStream, opts.log);
   });
