@@ -123,27 +123,33 @@ var processUpdate = require('./process-update');
 var customHandler;
 var subscribeAllHandler;
 function processMessage(obj) {
-  if (obj.action == "building") {
-    if (options.log) console.log("[HMR] bundle rebuilding");
-  } else if (obj.action == "built") {
-    if (options.log) {
-      console.log(
-        "[HMR] bundle " + (obj.name ? obj.name + " " : "") +
-        "rebuilt in " + obj.time + "ms"
-      );
-    }
-    if (obj.errors.length > 0) {
-      if (reporter) reporter.problems('errors', obj);
-    } else {
-      if (reporter) {
-        if (obj.warnings.length > 0) reporter.problems('warnings', obj);
-        reporter.success();
+  switch(obj.action) {
+    case "building":
+      if (options.log) console.log("[HMR] bundle rebuilding");
+      break;
+    case "built":
+      if (options.log) {
+        console.log(
+          "[HMR] bundle " + (obj.name ? obj.name + " " : "") +
+          "rebuilt in " + obj.time + "ms"
+        );
       }
-
-      processUpdate(obj.hash, obj.modules, options);
-    }
-  } else if (customHandler) {
-    customHandler(obj);
+      // fall through
+    case "sync":
+      if (obj.errors.length > 0) {
+        if (reporter) reporter.problems('errors', obj);
+      } else {
+        if (reporter) {
+          if (obj.warnings.length > 0) reporter.problems('warnings', obj);
+          reporter.success();
+        }
+        processUpdate(obj.hash, obj.modules, options);
+      }
+      break;
+    default:
+      if (customHandler) {
+        customHandler(obj);
+      }
   }
 
   if (subscribeAllHandler) {

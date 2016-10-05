@@ -2,7 +2,6 @@ module.exports = webpackHotMiddleware;
 
 var helpers = require('./helpers');
 var pathMatch = helpers.pathMatch;
-var latestStats;
 
 function webpackHotMiddleware(compiler, opts) {
   opts = opts || {};
@@ -11,17 +10,26 @@ function webpackHotMiddleware(compiler, opts) {
   opts.heartbeat = opts.heartbeat || 10 * 1000;
 
   var eventStream = createEventStream(opts);
+  var latestStats = null;
+
   compiler.plugin("compile", function() {
+    // Keep hold of latest stats so they can be propagated to new clients
+    latestStats = null;
     if (opts.log) opts.log("webpack building...");
     eventStream.publish({action: "building"});
   });
-  compiler.plugin("done", (stats) => {
-      latestStats = stats;
-      publishBuilt(stats, opts, eventStream);
+  compiler.plugin("done", function(statsResult) {
+    latestStats = statsResult;
+    publishStats("built", latestStats, eventStream, opts.log);
   });
   var middleware = function(req, res, next) {
     if (!pathMatch(req.url, opts.path)) return next();
     eventStream.handler(req, res);
+    if (latestStats) {
+      // Explicitly not passing in `log` fn as we don't want to log again on
+      // the server
+      publishStats("sync", latestStats, eventStream);
+    }
   };
   middleware.publish = eventStream.publish;
   return middleware;
@@ -39,7 +47,7 @@ function createEventStream(opts) {
     everyClient(function(client) {
       client.write("data: \uD83D\uDC93\n\n");
     });
-}, opts.heartbeat).unref();
+  }, opts.heartbeat).unref();
   return {
     handler: function(req, res) {
       req.socket.setKeepAlive(true);
@@ -52,17 +60,36 @@ function createEventStream(opts) {
       res.write('\n');
       var id = clientId++;
       clients[id] = res;
-      publishBuilt(latestStats, opts, this);
       req.on("close", function(){
         delete clients[id];
       });
     },
     publish: function(payload) {
       everyClient(function(client) {
-          client.write("data: " + JSON.stringify(payload) + "\n\n");
+        client.write("data: " + JSON.stringify(payload) + "\n\n");
       });
     }
   };
+}
+
+function publishStats(action, statsResult, eventStream, log) {
+  // For multi-compiler, stats will be an object with a 'children' array of stats
+  var bundles = extractBundles(statsResult.toJson());
+  bundles.forEach(function(stats) {
+    if (log) {
+      log("webpack built " + (stats.name ? stats.name + " " : "") +
+        stats.hash + " in " + stats.time + "ms");
+    }
+    eventStream.publish({
+      name: stats.name,
+      action: action,
+      time: stats.time,
+      hash: stats.hash,
+      warnings: stats.warnings || [],
+      errors: stats.errors || [],
+      modules: buildModuleMap(stats.modules)
+    });
+  });
 }
 
 function extractBundles(stats) {
@@ -82,29 +109,4 @@ function buildModuleMap(modules) {
     map[module.id] = module.name;
   });
   return map;
-}
-
-function publishBuilt(statsResult, opts, eventStream) {
-  statsResult = statsResult.toJson();
-
-  //for multi-compiler, stats will be an object with a 'children' array of stats
-  var bundles = extractBundles(statsResult);
-  if (!Array.isArray(bundles)) {
-      return;
-  }
-  bundles.forEach(function(stats) {
-    if (opts.log) {
-      opts.log("webpack built " + (stats.name ? stats.name + " " : "") +
-        stats.hash + " in " + stats.time + "ms");
-    }
-    eventStream.publish({
-      name: stats.name,
-      action: "built",
-      time: stats.time,
-      hash: stats.hash,
-      warnings: stats.warnings || [],
-      errors: stats.errors || [],
-      modules: buildModuleMap(stats.modules)
-    });
-  });
 }
