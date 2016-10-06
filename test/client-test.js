@@ -39,6 +39,18 @@ describe("client", function() {
       }));
       sinon.assert.calledOnce(processUpdate);
     });
+    it("should trigger webpack on successful syncs", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'sync',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.calledOnce(processUpdate);
+    });
     it("should call subscribeAll handler on default messages", function() {
       var spy = sinon.spy();
       client.subscribeAll(spy);
