@@ -37,10 +37,13 @@ Next, enable hot reloading in your webpack config:
     This connects to the server to receive notifications when the bundle
     rebuilds and then updates your client bundle accordingly.
 
-Now add the middleware into your server:
+Now attach it to your server:
 
- 1. Add `webpack-dev-middleware` the usual way
+ 1. Add `webpack-dev-middleware`
     ```js
+    var app = require('express')();
+    var server = require('http').Server(app);
+
     var webpack = require('webpack');
     var webpackConfig = require('./webpack.config');
     var compiler = webpack(webpackConfig);
@@ -52,7 +55,7 @@ Now add the middleware into your server:
 
  2. Add `webpack-hot-middleware` attached to the same compiler instance
     ```js
-    app.use(require("webpack-hot-middleware")(compiler));
+    require("webpack-hot-middleware")(server, compiler);
     ```
 
 And you're all set!
