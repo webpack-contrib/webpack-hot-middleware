@@ -1,86 +1,52 @@
 module.exports = webpackHotMiddleware;
 
-var helpers = require('./helpers');
-var pathMatch = helpers.pathMatch;
-
-function webpackHotMiddleware(compiler, opts) {
+function webpackHotMiddleware(server, compiler, opts) {
   opts = opts || {};
   opts.log = typeof opts.log == 'undefined' ? console.log.bind(console) : opts.log;
   opts.path = opts.path || '/__webpack_hmr';
-  opts.heartbeat = opts.heartbeat || 10 * 1000;
 
-  var eventStream = createEventStream(opts.heartbeat);
+  var io = require('socket.io')(server);
   var latestStats = null;
+
+  var allClients = io.of(opts.path);
+
+  allClients.on("connection", function(client) {
+    if (latestStats) {
+      // Explicitly not passing in `log` fn as we don't want to log again on
+      // the server
+      publishStats("sync", latestStats, client);
+    }
+  });
 
   compiler.plugin("compile", function() {
     latestStats = null;
     if (opts.log) opts.log("webpack building...");
-    eventStream.publish({action: "building"});
+    allClients.emit("message", {action: "building"});
   });
+
   compiler.plugin("done", function(statsResult) {
     // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
-    publishStats("built", latestStats, eventStream, opts.log);
+    publishStats("built", latestStats, allClients, opts.log);
   });
-  var middleware = function(req, res, next) {
-    if (!pathMatch(req.url, opts.path)) return next();
-    eventStream.handler(req, res);
-    if (latestStats) {
-      // Explicitly not passing in `log` fn as we don't want to log again on
-      // the server
-      publishStats("sync", latestStats, eventStream);
-    }
-  };
-  middleware.publish = eventStream.publish;
-  return middleware;
-}
 
-function createEventStream(heartbeat) {
-  var clientId = 0;
-  var clients = {};
-  function everyClient(fn) {
-    Object.keys(clients).forEach(function(id) {
-      fn(clients[id]);
-    });
-  }
-  setInterval(function heartbeatTick() {
-    everyClient(function(client) {
-      client.write("data: \uD83D\uDC93\n\n");
-    });
-  }, heartbeat).unref();
   return {
-    handler: function(req, res) {
-      req.socket.setKeepAlive(true);
-      res.writeHead(200, {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'text/event-stream;charset=utf-8',
-        'Cache-Control': 'no-cache, no-transform',
-        'Connection': 'keep-alive'
-      });
-      res.write('\n');
-      var id = clientId++;
-      clients[id] = res;
-      req.on("close", function(){
-        delete clients[id];
-      });
-    },
-    publish: function(payload) {
-      everyClient(function(client) {
-        client.write("data: " + JSON.stringify(payload) + "\n\n");
-      });
+    publish: function(event) {
+      allClients.emit("message", event);
     }
   };
 }
 
-function publishStats(action, statsResult, eventStream, log) {
-  // For multi-compiler, stats will be an object with a 'children' array of stats
+function publishStats(action, statsResult, target, log) {
+  // For multi-compiler, stats will be an object
+  // with a 'children' array of stats
   var bundles = extractBundles(statsResult.toJson());
   bundles.forEach(function(stats) {
     if (log) {
       log("webpack built " + (stats.name ? stats.name + " " : "") +
         stats.hash + " in " + stats.time + "ms");
     }
-    eventStream.publish({
+    target.emit("message", {
       name: stats.name,
       action: action,
       time: stats.time,

@@ -1,9 +1,10 @@
 /*eslint-env browser*/
 /*global __resourceQuery __webpack_public_path__*/
 
+var io = require('socket.io-client');
+
 var options = {
   path: "/__webpack_hmr",
-  timeout: 20 * 1000,
   overlay: true,
   reload: false,
   log: true,
@@ -13,7 +14,6 @@ if (__resourceQuery) {
   var querystring = require('querystring');
   var overrides = querystring.parse(__resourceQuery.slice(1));
   if (overrides.path) options.path = overrides.path;
-  if (overrides.timeout) options.timeout = overrides.timeout;
   if (overrides.overlay) options.overlay = overrides.overlay !== 'false';
   if (overrides.reload) options.reload = overrides.reload !== 'false';
   if (overrides.noInfo && overrides.noInfo !== 'false') {
@@ -30,55 +30,30 @@ if (__resourceQuery) {
 
 if (typeof window === 'undefined') {
   // do nothing
-} else if (typeof window.EventSource === 'undefined') {
-  console.warn(
-    "webpack-hot-middleware's client requires EventSource to work. " +
-    "You should include a polyfill if you want to support this browser: " +
-    "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools"
-  );
 } else {
-  connect(window.EventSource);
+  connect();
 }
 
-function connect(EventSource) {
-  var source = new EventSource(options.path);
+function connect() {
+  var socket = io.connect(options.path);
+
   var lastActivity = new Date();
 
-  source.onopen = handleOnline;
-  source.onmessage = handleMessage;
-  source.onerror = handleDisconnect;
-
-  var timer = setInterval(function() {
-    if ((new Date() - lastActivity) > options.timeout) {
-      handleDisconnect();
-    }
-  }, options.timeout / 2);
-
-  function handleOnline() {
+  socket.on('connect', function () {
     if (options.log) console.log("[HMR] connected");
     lastActivity = new Date();
-  }
+  });
 
-  function handleMessage(event) {
+  socket.on('message', function(data) {
     lastActivity = new Date();
-    if (event.data == "\uD83D\uDC93") {
-      return;
-    }
     try {
-      processMessage(JSON.parse(event.data));
+      processMessage(data);
     } catch (ex) {
       if (options.warn) {
-        console.warn("Invalid HMR message: " + event.data + "\n" + ex);
+        console.warn("Invalid HMR message: " + data + "\n" + ex);
       }
     }
-  }
-
-  function handleDisconnect() {
-    clearInterval(timer);
-    source.close();
-    setTimeout(function() { connect(EventSource); }, options.timeout);
-  }
-
+  });
 }
 
 var reporter;
@@ -123,7 +98,7 @@ var processUpdate = require('./process-update');
 var customHandler;
 var subscribeAllHandler;
 function processMessage(obj) {
-  switch(obj.action) {
+  switch (obj.action) {
     case "building":
       if (options.log) console.log("[HMR] bundle rebuilding");
       break;
