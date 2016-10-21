@@ -37,10 +37,13 @@ Next, enable hot reloading in your webpack config:
     This connects to the server to receive notifications when the bundle
     rebuilds and then updates your client bundle accordingly.
 
-Now add the middleware into your server:
+Now attach it to your server:
 
- 1. Add `webpack-dev-middleware` the usual way
+ 1. Add `webpack-dev-middleware`
     ```js
+    var app = require('express')();
+    var server = require('http').Server(app);
+
     var webpack = require('webpack');
     var webpackConfig = require('./webpack.config');
     var compiler = webpack(webpackConfig);
@@ -52,12 +55,22 @@ Now add the middleware into your server:
 
  2. Add `webpack-hot-middleware` attached to the same compiler instance
     ```js
-    app.use(require("webpack-hot-middleware")(compiler));
+    require("webpack-hot-middleware")(server, compiler, {
+        path: '/__webpack_hmr',
+        log: console.log
+    });
     ```
 
 And you're all set!
 
 ## Changelog
+
+### 2.1.0
+
+**Breaking Change**
+
+As of version 2.1.0, despite it's name `webpack-hot-middleware` is no longer a middleware.
+Instead it attaches socket.io to the http(s) server instance. The main advantage of using socket.io is browser support which goes as low as Internet Explorer 5.5.
 
 ### 2.0.0
 
@@ -76,11 +89,10 @@ More to come soon, you'll have to mostly rely on the example for now.
 Configuration options can be passed to the client by adding querystring parameters to the path in the webpack config.
 
 ```js
-'webpack-hot-middleware/client?path=/__what&timeout=2000&overlay=false'
+'webpack-hot-middleware/client?path=/__what&&overlay=false'
 ```
 
 * **path** - The path which the middleware is serving the event stream on
-* **timeout** - The time to wait after a disconnection before attempting to reconnect
 * **overlay** - Set to `false` to disable the DOM-based client-side overlay.
 * **reload** - Set to `true` to auto-reload the page when webpack gets stuck.
 * **noInfo** - Set to `true` to disable informational console logging.
@@ -106,10 +118,6 @@ Use the [hapi-webpack-plugin](https://www.npmjs.com/package/hapi-webpack-plugin)
 Use [koa-webpack-middleware](https://www.npmjs.com/package/koa-webpack-middleware), which wraps this module and makes it work with koa.
 
 ## Troubleshooting
-
-### Use on browsers without EventSource
-
-If you want to use this module with browsers that don't support eventsource, you'll need to use a [polyfill](https://libraries.io/search?platforms=NPM&q=eventsource+polyfill). See [issue #11](https://github.com/glenjamin/webpack-hot-middleware/issues/11)
 
 ### Not receiving updates in client when using Gzip
 

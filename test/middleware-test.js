@@ -3,120 +3,69 @@ var events = require('events');
 var assert = require('assert');
 
 var sinon = require('sinon');
-var supertest = require('supertest');
 
-var express = require('express');
+var io = require('socket.io-client');
 var webpackHotMiddleware = require('../middleware');
 
 describe("middleware", function() {
-  var s, compiler, app, middleware;
+  var s, compiler, app, server, middleware, client;
 
   context("with default options", function() {
-    beforeEach(setupServer({log: function(){}}));
+    beforeEach(startServer({log: function() {}}));
+    beforeEach(connectClient({}));
+    afterEach(disconnectClient);
+    afterEach(stopServer);
 
-    it("should create eventStream on /__webpack_hmr", function(done) {
-      request('/__webpack_hmr')
-        .expect('Content-Type', /^text\/event-stream\b/)
-        .end(done);
-    });
-    it("should heartbeat every 10 seconds", function(done) {
-      request('/__webpack_hmr')
-        .end(function(err, res) {
-          if (err) return done(err);
-
-          // Tick 3 times, then verify
-          var i = 0;
-          tick(10, 'seconds');
-          res.on('data', function() {
-            if (++i < 3) {
-              tick(10, 'seconds');
-            } else {
-              verify();
-            }
-          });
-
-          function verify() {
-            assert.equal(res.events.length, 3);
-            res.events.every(function(chunk) {
-              assert(/^data: /.test(chunk));
-            });
-            done();
-          }
-        });
-    });
     it("should notify clients when bundle rebuild begins", function(done) {
-      request('/__webpack_hmr')
-        .end(function(err, res) {
-          if (err) return done(err);
-
-          res.on('data', verify);
-
-          compiler.emit("compile");
-
-          function verify() {
-            assert.equal(res.events.length, 1);
-            var event = JSON.parse(res.events[0].substring(5));
-            assert.equal(event.action, "building");
-            done();
-          }
-        });
+      client.on("message", function(event) {
+        assert.equal(event.action, "building");
+        done();
+      });
+      compiler.emit("compile");
     });
     it("should notify clients when bundle is complete", function(done) {
-      request('/__webpack_hmr')
-        .end(function(err, res) {
-          if (err) return done(err);
+      client.on("message", function(event) {
+        assert.equal(event.action, "built");
+        done();
+      });
 
-          res.on('data', verify);
+      compiler.emit("done", stats({
+        time: 100,
+        hash: "deadbeeffeddad",
+        warnings: false,
+        errors: false,
+        modules: []
+      }));
+    });
+    it("should notify clients when bundle is complete (multicompiler)", function(done) {
+      client.on("message", verify);
 
-          compiler.emit("done", stats({
+      compiler.emit("done", stats({
+        children: [
+          {
             time: 100,
             hash: "deadbeeffeddad",
             warnings: false,
             errors: false,
             modules: []
-          }));
-
-          function verify() {
-            assert.equal(res.events.length, 1);
-            var event = JSON.parse(res.events[0].substring(5));
-            assert.equal(event.action, "built");
-            done();
+          },
+          {
+            time: 150,
+            hash: "gwegawefawefawef",
+            warnings: false,
+            errors: false,
+            modules: []
           }
-        });
-    });
-    it("should notify clients when bundle is complete (multicompiler)", function(done) {
-      request('/__webpack_hmr')
-        .end(function(err, res) {
-          if (err) return done(err);
+        ]
+      }));
 
-          res.on('data', verify);
-
-          compiler.emit("done", stats({
-            children: [
-              {
-                time: 100,
-                hash: "deadbeeffeddad",
-                warnings: false,
-                errors: false,
-                modules: []
-              },
-              {
-                time: 150,
-                hash: "gwegawefawefawef",
-                warnings: false,
-                errors: false,
-                modules: []
-              }
-            ]
-          }));
-
-          function verify() {
-            assert.equal(res.events.length, 1);
-            var event = JSON.parse(res.events[0].substring(5));
-            assert.equal(event.action, "built");
-            done();
-          }
-        });
+      // Finish test when client received two updates
+      verify.n = 0;
+      function verify(event) {
+        assert.equal(event.action, "built");
+        if (++verify.n < 2) return;
+        done();
+      }
     });
     it("should notify new clients about current compilation state", function(done) {
       compiler.emit("done", stats({
@@ -126,109 +75,64 @@ describe("middleware", function() {
         errors: false,
         modules: []
       }));
-
-      request('/__webpack_hmr')
-        .end(function(err, res) {
-          if (err) return done(err);
-          assert.equal(res.events.length, 1);
-          var event = JSON.parse(res.events[0].substring(5));
-          assert.equal(event.action, "sync");
-          done();
-        });
+      var client2 = io.connect("http://localhost:3000");
+      client2.on("message", function(event) {
+        assert.equal(event.action, "sync");
+        done();
+      });
     });
     it("should have tests on the payload of bundle complete");
     it("should notify all clients", function(done) {
-      request('/__webpack_hmr')
-        .end(function(err, res) {
-          if (err) return done(err);
-          res.on('data', verify);
-          when();
-        });
-      request('/__webpack_hmr')
-        .end(function(err, res) {
-          if (err) return done(err);
-          res.on('data', verify);
-          when();
-        });
+      var client2 = io.connect("http://localhost:3000");
 
-      // Emit compile when both requests are connected
-      when.n = 0;
-      function when() {
-        if (++when.n < 2) return;
-
+      client.on("message", verify);
+      client2.on("message", verify);
+      client2.on("connect", function () {
         compiler.emit("compile");
-      }
+      });
 
-      // Finish test when both requests report data
+      // Finish test when both clients received data
       verify.n = 0;
       function verify() {
         if (++verify.n < 2) return;
-
+        client2.disconnect();
         done();
       }
     });
     it("should allow custom events to be published", function(done) {
-      request('/__webpack_hmr')
-        .end(function(err, res) {
-          if (err) return done(err);
-          res.on('data', verify);
+      middleware.publish({ obj: 'with stuff' });
 
-          middleware.publish({ obj: 'with stuff' });
-
-          function verify() {
-            assert.equal(res.events.length, 1);
-            var event = JSON.parse(res.events[0].substring(5));
-            assert.deepEqual(event, { obj: 'with stuff' });
-            done();
-          }
-        });
+      client.on("message", function(event) {
+        assert.deepEqual(event, { obj: 'with stuff' });
+        done();
+      });
     });
   });
 
   beforeEach(function() {
     s = sinon.sandbox.create();
-    s.useFakeTimers();
     compiler = new (events.EventEmitter)();
     compiler.plugin = compiler.on;
   });
   afterEach(function() {
     s.restore();
   });
-  function tick(time, unit) {
-    if (unit == 'seconds') time *= 1000;
-    s.clock.tick(time + 10); // +10ms for some leeway
-  }
-  function setupServer(opts) {
+  function startServer(opts) {
     return function() {
-      app = express();
       middleware = webpackHotMiddleware(compiler, opts);
-      app.use(middleware);
     };
   }
-  function request(path) {
-    // Wrap some stuff up so supertest works with streaming responses
-    var req = supertest(app).get(path).buffer(false);
-    var end = req.end;
-    req.end = function(callback) {
-      req
-        .on('error', callback)
-        .on('response', function(res) {
-          Object.defineProperty(res, 'events', {get: function() {
-            return res.text.trim().split("\n\n");
-          }});
-          res.on('data', function(chunk) {
-            res.text = (res.text || '') + chunk;
-          });
-          process.nextTick(function() {
-            req.assert(null, res, function(err) {
-              callback(err, res);
-            });
-          });
-        });
-
-      end.call(req, function(){});
-    };
-    return req;
+  function stopServer() {
+    middleware.close();
+  }
+  function connectClient(opts) {
+    return function(done) {
+      client = io.connect("http://localhost:3000");
+      client.on("connect", done);
+    }
+  }
+  function disconnectClient() {
+    client.disconnect();
   }
   function stats(data) {
     return {
