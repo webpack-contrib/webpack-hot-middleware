@@ -4,12 +4,8 @@ var assert = require('assert');
 
 var sinon = require('sinon');
 
-var express = require('express');
-var http = require('http');
 var io = require('socket.io-client');
 var webpackHotMiddleware = require('../middleware');
-
-var serverPort = process.env.PORT || 3030;
 
 describe("middleware", function() {
   var s, compiler, app, server, middleware, client;
@@ -79,7 +75,7 @@ describe("middleware", function() {
         errors: false,
         modules: []
       }));
-      var client2 = io.connect("http://localhost:" + serverPort + "/__webpack_hmr");
+      var client2 = io.connect("http://localhost:3000");
       client2.on("message", function(event) {
         assert.equal(event.action, "sync");
         done();
@@ -87,7 +83,7 @@ describe("middleware", function() {
     });
     it("should have tests on the payload of bundle complete");
     it("should notify all clients", function(done) {
-      var client2 = io.connect("http://localhost:" + serverPort + "/__webpack_hmr");
+      var client2 = io.connect("http://localhost:3000");
 
       client.on("message", verify);
       client2.on("message", verify);
@@ -123,19 +119,15 @@ describe("middleware", function() {
   });
   function startServer(opts) {
     return function() {
-      app = express();
-      server = http.Server(app);
-      middleware = webpackHotMiddleware(server, compiler, opts);
-      server.listen(serverPort);
+      middleware = webpackHotMiddleware(compiler, opts);
     };
   }
   function stopServer() {
-    server.close();
+    middleware.close();
   }
   function connectClient(opts) {
     return function(done) {
-      var path = opts.path || "/__webpack_hmr";
-      client = io.connect("http://localhost:" + serverPort + path);
+      client = io.connect("http://localhost:3000");
       client.on("connect", done);
     }
   }

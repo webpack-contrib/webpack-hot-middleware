@@ -2,9 +2,12 @@
 /*global __resourceQuery __webpack_public_path__*/
 
 var io = require('socket.io-client');
+var parse = require('parse-uri');
 
 var options = {
-  path: "/__webpack_hmr",
+  port: 3000,
+  path: '',
+  timeout: 20 * 1000,
   overlay: true,
   reload: false,
   log: true,
@@ -14,6 +17,8 @@ if (__resourceQuery) {
   var querystring = require('querystring');
   var overrides = querystring.parse(__resourceQuery.slice(1));
   if (overrides.path) options.path = overrides.path;
+  if (overrides.port) options.port = overrides.port;
+  if (overrides.timeout) options.timeout = overrides.timeout;
   if (overrides.overlay) options.overlay = overrides.overlay !== 'false';
   if (overrides.reload) options.reload = overrides.reload !== 'false';
   if (overrides.noInfo && overrides.noInfo !== 'false') {
@@ -35,7 +40,15 @@ if (typeof window === 'undefined') {
 }
 
 function connect() {
-  var socket = io.connect(options.path);
+  var uri = parse(options.path);
+  var host = uri.host ? uri.host : window.location.hostname;
+  var protocol = uri.protocol ? uri.protocol : window.location.protocol;
+
+  var socketServer = protocol + "//" + host + ":" + options.port;
+
+  var socket = io.connect(socketServer, {
+    timeout: options.timeout
+  });
 
   var lastActivity = new Date();
 

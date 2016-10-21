@@ -1,5 +1,4 @@
 var app = require('express')();
-
 var server = require('http').Server(app);
 
 app.use(require('morgan')('short'));
@@ -19,9 +18,7 @@ app.use(require('morgan')('short'));
   }));
 
   // Step 3: Attach the hot middleware to the compiler & the http server
-  require("webpack-hot-middleware")(server, compiler, {
-    log: console.log, path: '/__webpack_hmr'
-  });
+  app.use(require("webpack-hot-middleware")(compiler));
 })();
 
 // Do anything you like with the rest of your express application.

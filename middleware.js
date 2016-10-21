@@ -1,40 +1,47 @@
 module.exports = webpackHotMiddleware;
 
-function webpackHotMiddleware(server, compiler, opts) {
+function webpackHotMiddleware(compiler, opts) {
   opts = opts || {};
   opts.log = typeof opts.log == 'undefined' ? console.log.bind(console) : opts.log;
   opts.path = opts.path || '/__webpack_hmr';
+  opts.port = opts.port || 3000;
 
-  var io = require('socket.io')(server);
+  var io = require('socket.io')();
   var latestStats = null;
 
-  var allClients = io.of(opts.path);
-
-  allClients.on("connection", function(client) {
+  io.sockets.on("connection", function(socket) {
     if (latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
-      publishStats("sync", latestStats, client);
+      publishStats("sync", latestStats, socket);
     }
   });
 
   compiler.plugin("compile", function() {
     latestStats = null;
     if (opts.log) opts.log("webpack building...");
-    allClients.emit("message", {action: "building"});
+    io.sockets.emit("message", {action: "building"});
   });
 
   compiler.plugin("done", function(statsResult) {
     // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
-    publishStats("built", latestStats, allClients, opts.log);
+    publishStats("built", latestStats, io.sockets, opts.log);
   });
 
-  return {
-    publish: function(event) {
-      allClients.emit("message", event);
-    }
+  var middleware = function(req, res, next) {
+    return next();
   };
+
+  io.listen(opts.port);
+
+  middleware.publish = function(event) {
+    io.sockets.emit("message", event);
+  };
+  middleware.close = function() {
+    io.close();
+  }
+  return middleware;
 }
 
 function publishStats(action, statsResult, target, log) {

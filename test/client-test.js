@@ -17,12 +17,19 @@ describe("client", function() {
   context("with default options", function() {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
-      global.window = {};
+      global.window = {
+        location: {
+          protocol: 'http:',
+          hostname: 'localhost'
+        }
+      };
     });
     beforeEach(loadClient);
     it("should connect to __webpack_hmr", function() {
       sinon.assert.calledOnce(io.connect);
-      sinon.assert.calledWith(io.connect, '/__webpack_hmr');
+      var l = global.window.location;
+      var socketServer = l.protocol + "//" + l.hostname + ":3000";
+      sinon.assert.calledWith(io.connect, socketServer, { timeout: 20 * 1000 });
     });
     it("should trigger webpack on successful builds", function() {
       var socket = io.connect.lastCall.returnValue;

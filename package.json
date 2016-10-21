@@ -26,6 +26,7 @@
   "dependencies": {
     "ansi-html": "0.0.5",
     "html-entities": "^1.2.0",
+    "parse-uri": "^1.0.0",
     "querystring": "^0.2.0",
     "socket.io": "^1.5.0",
     "socket.io-client": "^1.5.0",
