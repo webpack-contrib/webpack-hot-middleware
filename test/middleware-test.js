@@ -3,7 +3,6 @@ var events = require('events');
 var assert = require('assert');
 
 var sinon = require('sinon');
-var supertest = require('supertest');
 
 var express = require('express');
 var http = require('http');
