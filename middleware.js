@@ -74,7 +74,7 @@ function createEventStream(heartbeat) {
 
 function publishStats(action, statsResult, eventStream, log) {
   // For multi-compiler, stats will be an object with a 'children' array of stats
-  var bundles = extractBundles(statsResult.toJson());
+  var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
   bundles.forEach(function(stats) {
     if (log) {
       log("webpack built " + (stats.name ? stats.name + " " : "") +
