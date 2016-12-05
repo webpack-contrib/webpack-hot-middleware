@@ -134,4 +134,4 @@ entry: {
 
 Copyright 2015 Glen Mailer.
 
-MIT Licened.
+MIT Licensed.
