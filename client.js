@@ -99,13 +99,21 @@ function createReporter() {
     overlay = require('./client-overlay');
   }
 
+
+  var previousProblems = null;
+
   return {
+    cleanProblemsCache: function () {
+      previousProblems = null;
+    },
     problems: function(type, obj) {
       if (options.warn) {
-        console.warn("[HMR] bundle has " + type + ":");
-        obj[type].forEach(function(msg) {
-          console.warn("[HMR] " + strip(msg));
-        });
+        var newProblems = obj[type].map(function(msg) { return strip(msg); }).join('\n');
+
+        if (previousProblems !== newProblems) {
+          previousProblems = newProblems;
+          console.warn("[HMR] bundle has " + type + ":\n" + newProblems);
+        }
       }
       if (overlay && type !== 'warnings') overlay.showProblems(type, obj[type]);
     },
@@ -140,7 +148,11 @@ function processMessage(obj) {
         if (reporter) reporter.problems('errors', obj);
       } else {
         if (reporter) {
-          if (obj.warnings.length > 0) reporter.problems('warnings', obj);
+          if (obj.warnings.length > 0) {
+            reporter.problems('warnings', obj);
+          } else {
+            reporter.cleanProblemsCache();
+          }
           reporter.success();
         }
         processUpdate(obj.hash, obj.modules, options);
