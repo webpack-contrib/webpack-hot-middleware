@@ -100,6 +100,44 @@ describe("client", function() {
     it("should test more of the client's functionality");
   });
 
+  context("with name options", function() {
+    beforeEach(function setup() {
+      global.__resourceQuery = '?name=test'; // eslint-disable-line no-underscore-dangle
+      global.window = {
+        EventSource: sinon.stub().returns({
+          close: sinon.spy()
+        })
+      };
+    });
+    beforeEach(loadClient);
+    it("should not trigger webpack if event obj name is different", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        name: 'foo',
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.notCalled(processUpdate);
+    });
+    it("should not trigger webpack on successful syncs if obj name is different", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        name: 'bar',
+        action: 'sync',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.notCalled(processUpdate);
+    });
+  });
+
   context("with no browser environment", function() {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
