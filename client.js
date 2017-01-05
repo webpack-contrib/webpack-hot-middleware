@@ -85,13 +85,13 @@ function connect(EventSource) {
 
 }
 
-var reporter;
 // the reporter needs to be a singleton on the page
-// in case the client is being used by mutliple bundles
+// in case the client is being used by multiple bundles
 // we only want to report once.
 // all the errors will go to all clients
 var singletonKey = '__webpack_hot_middleware_reporter__';
-if (typeof window !== 'undefined' && !window[singletonKey]) {
+var reporter = window && window[singletonKey];
+if (typeof window !== 'undefined' && !reporter) {
   reporter = window[singletonKey] = createReporter();
 }
 
