@@ -2,6 +2,7 @@ module.exports = webpackHotMiddleware;
 
 var helpers = require('./helpers');
 var pathMatch = helpers.pathMatch;
+var detectConstDependency = helpers.detectConstDependency;
 
 function webpackHotMiddleware(compiler, opts) {
   opts = opts || {};
@@ -11,6 +12,32 @@ function webpackHotMiddleware(compiler, opts) {
 
   var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
+
+  var compilers = compiler.compilers || [compiler];
+  compilers.forEach(function(compiler, index) {
+    compiler.id = "__WEBPACK_COMPILER_" + index + "__";
+    compiler.plugin("compilation", function (compilation, params) {
+      var hotUpdateChunkTemplate = compilation.hotUpdateChunkTemplate;
+      if(!hotUpdateChunkTemplate) return;
+
+      compilation.mainTemplate.plugin("require-extensions", function(source) {
+        var buf = [source];
+        buf.push("");
+        buf.push("// __webpack_compiler__");
+        buf.push(this.requireFn + ".compiler = function() { return " + JSON.stringify(compiler.id) + "; };");
+        return this.asString(buf);
+      });
+    });
+    compiler.parser.plugin("expression __webpack_compiler__", function(expr) {
+      var ConstDependency = detectConstDependency(this.state.compilation);
+      if (!ConstDependency) return true;
+
+      var dep = new ConstDependency("__webpack_require__.compiler()", expr.range);
+      dep.loc = expr.loc;
+      this.state.current.addDependency(dep);
+      return true;
+    });
+  });
 
   compiler.plugin("compile", function() {
     latestStats = null;
@@ -75,13 +102,17 @@ function createEventStream(heartbeat) {
 function publishStats(action, statsResult, eventStream, log) {
   // For multi-compiler, stats will be an object with a 'children' array of stats
   var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
-  bundles.forEach(function(stats) {
+  bundles.forEach(function(stats, index) {
     if (log) {
       log("webpack built " + (stats.name ? stats.name + " " : "") +
         stats.hash + " in " + stats.time + "ms");
     }
+    var compiler = statsResult.stats
+      ? statsResult.stats[index].compilation.compiler.id
+      : statsResult.compilation.compiler.id;
     eventStream.publish({
       name: stats.name,
+      compiler: compiler,
       action: action,
       time: stats.time,
       hash: stats.hash,

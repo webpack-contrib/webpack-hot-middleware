@@ -1,5 +1,5 @@
 /*eslint-env browser*/
-/*global __resourceQuery __webpack_public_path__*/
+/*global __resourceQuery __webpack_public_path__ __webpack_compiler__*/
 
 var options = {
   path: "/__webpack_hmr",
@@ -7,8 +7,7 @@ var options = {
   overlay: true,
   reload: false,
   log: true,
-  warn: true,
-  name: ''
+  warn: true
 };
 if (__resourceQuery) {
   var querystring = require('querystring');
@@ -19,9 +18,6 @@ if (__resourceQuery) {
   if (overrides.reload) options.reload = overrides.reload !== 'false';
   if (overrides.noInfo && overrides.noInfo !== 'false') {
     options.log = false;
-  }
-  if (overrides.name) {
-    options.name = overrides.name 
   }
   if (overrides.quiet && overrides.quiet !== 'false') {
     options.log = false;
@@ -116,7 +112,10 @@ function createReporter() {
 
         if (previousProblems !== newProblems) {
           previousProblems = newProblems;
-          console.warn("[HMR] bundle has " + type + ":\n" + newProblems);
+          console.warn(
+            "[HMR] bundle " + (obj.name ? "'" + obj.name + "' " : "") +
+            "has " + type + ":\n" + newProblems
+          );
         }
       }
       if (overlay && type !== 'warnings') overlay.showProblems(type, obj[type]);
@@ -135,22 +134,25 @@ var processUpdate = require('./process-update');
 var customHandler;
 var subscribeAllHandler;
 function processMessage(obj) {
+  if (obj.compiler != __webpack_compiler__) return;
   switch(obj.action) {
     case "building":
-      if (options.log) console.log("[HMR] bundle rebuilding");
+      if (options.log) {
+        console.log(
+          "[HMR] bundle " + (obj.name ? "'" + obj.name + "' " : "") +
+          "rebuilding"
+        );
+      }
       break;
     case "built":
       if (options.log) {
         console.log(
-          "[HMR] bundle " + (obj.name ? obj.name + " " : "") +
+          "[HMR] bundle " + (obj.name ? "'" + obj.name + "' " : "") +
           "rebuilt in " + obj.time + "ms"
         );
       }
       // fall through
     case "sync":
-      if (obj.name && options.name && obj.name !== options.name) {
-        return;
-      }
       if (obj.errors.length > 0) {
         if (reporter) reporter.problems('errors', obj);
       } else {
