@@ -99,8 +99,36 @@ function createReporter() {
     overlay = require('./client-overlay');
   }
 
-
+  var styles = {
+    errors: "color: #ff0000;",
+    warnings: "color: #5c3b00;"
+  };
   var previousProblems = null;
+  function log(type, obj) {
+    var newProblems = obj[type].map(function(msg) { return strip(msg); }).join('\n');
+    if (previousProblems == newProblems) {
+      return;
+    } else {
+      previousProblems = newProblems;
+    }
+
+    var style = styles[type];
+    var name = obj.name ? "'" + obj.name + "' " : "";
+    var title = "[HMR] bundle " + name + "has " + obj[type].length + " " + type;
+    // NOTE: console.warn or console.error will print the stack trace
+    // which isn't helpful here, so using console.log to escape it.
+    if (console.group && console.groupEnd) {
+      console.group("%c" + title, style);
+      console.log("%c" + newProblems, style);
+      console.groupEnd();
+    } else {
+      console.log(
+        "%c" + title + "\n\t%c" + newProblems.replace(/\n/g, "\n\t"),
+        style + "font-weight: bold;",
+        style + "font-weight: normal;"
+      );
+    }
+  }
 
   return {
     cleanProblemsCache: function () {
@@ -108,15 +136,7 @@ function createReporter() {
     },
     problems: function(type, obj) {
       if (options.warn) {
-        var newProblems = obj[type].map(function(msg) { return strip(msg); }).join('\n');
-
-        if (previousProblems !== newProblems) {
-          previousProblems = newProblems;
-          console.warn(
-            "[HMR] bundle " + (obj.name ? "'" + obj.name + "' " : "") +
-            "has " + type + ":\n" + newProblems
-          );
-        }
+        log(type, obj);
       }
       if (overlay && type !== 'warnings') overlay.showProblems(type, obj[type]);
     },
