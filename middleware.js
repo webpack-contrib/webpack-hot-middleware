@@ -76,6 +76,9 @@ function createEventStream(heartbeat) {
       fn(clients[id]);
     });
   }
+  function send(client, payload) {
+    client.write("data: " + JSON.stringify(payload) + "\n\n");
+  }
   setInterval(function heartbeatTick() {
     everyClient(function(client) {
       client.write("data: \uD83D\uDC93\n\n");
@@ -98,14 +101,11 @@ function createEventStream(heartbeat) {
       });
     },
     publish: function(payload) {
-      var me = this;
       everyClient(function(client) {
-        me.send(client, payload);
+        send(client, payload);
       });
     },
-    send: function(client, payload) {
-      client.write("data: " + JSON.stringify(payload) + "\n\n");
-    }
+    send: send
   };
 }
 

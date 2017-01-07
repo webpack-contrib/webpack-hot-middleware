@@ -86,9 +86,12 @@ function connect(EventSource) {
 // we only want to report once.
 // all the errors will go to all clients
 var singletonKey = '__webpack_hot_middleware_reporter__';
-var reporter = window && window[singletonKey];
-if (typeof window !== 'undefined' && !reporter) {
-  reporter = window[singletonKey] = createReporter();
+var reporter;
+if (typeof window !== 'undefined') {
+  if (!window[singletonKey]) {
+    window[singletonKey] = createReporter();
+  }
+  reporter = window[singletonKey];
 }
 
 function createReporter() {
@@ -154,7 +157,12 @@ var processUpdate = require('./process-update');
 var customHandler;
 var subscribeAllHandler;
 function processMessage(obj) {
-  if (obj.compiler != __webpack_compiler__) return;
+  if (
+    typeof __webpack_compiler__ !== 'undefined' &&
+    obj.compiler !== __webpack_compiler__
+  ) {
+    return;
+  }
   switch(obj.action) {
     case "building":
       if (options.log) {
