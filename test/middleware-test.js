@@ -189,7 +189,9 @@ describe("middleware", function() {
     s = sinon.sandbox.create();
     s.useFakeTimers();
     compiler = new (events.EventEmitter)();
+    compiler.id = '__WEBPACK_COMPILER_0__';
     compiler.plugin = compiler.on;
+    compiler.parser = {plugin: compiler.on};
   });
   afterEach(function() {
     s.restore();
@@ -231,10 +233,24 @@ describe("middleware", function() {
     return req;
   }
   function stats(data) {
-    return {
+    var statsResult = {
+      compilation: {compiler: compiler},
       toJson: function() {
         return data;
       }
     };
+
+    if (data.children) {
+      // Multiple compiler stats
+      statsResult.stats = new Array(data.children.length);
+      data.children.forEach(function (child, index) {
+        statsResult.stats[index] = {
+          compilation: {
+            compiler: {id: '__WEBPACK_COMPILER_' + (index + 1) + '__'}
+          }
+        };
+      });
+    }
+    return statsResult;
   }
 });
