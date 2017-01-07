@@ -61,7 +61,7 @@ function webpackHotMiddleware(compiler, opts) {
     if (latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
-      publishStats("sync", latestStats, eventStream);
+      publishStats("sync", latestStats, eventStream, null, res);
     }
   };
   middleware.publish = eventStream.publish;
@@ -98,14 +98,18 @@ function createEventStream(heartbeat) {
       });
     },
     publish: function(payload) {
+      var me = this;
       everyClient(function(client) {
-        client.write("data: " + JSON.stringify(payload) + "\n\n");
+        me.send(client, payload);
       });
+    },
+    send: function(client, payload) {
+      client.write("data: " + JSON.stringify(payload) + "\n\n");
     }
   };
 }
 
-function publishStats(action, statsResult, eventStream, log) {
+function publishStats(action, statsResult, eventStream, log, client) {
   // For multi-compiler, stats will be an object with a 'children' array of stats
   var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
   bundles.forEach(function(stats, index) {
@@ -116,7 +120,7 @@ function publishStats(action, statsResult, eventStream, log) {
     var compiler = statsResult.stats
       ? statsResult.stats[index].compilation.compiler.id
       : statsResult.compilation.compiler.id;
-    eventStream.publish({
+    var payload = {
       name: stats.name,
       compiler: compiler,
       action: action,
@@ -125,7 +129,12 @@ function publishStats(action, statsResult, eventStream, log) {
       warnings: stats.warnings || [],
       errors: stats.errors || [],
       modules: buildModuleMap(stats.modules)
-    });
+    };
+    if (client) {
+      eventStream.send(client, payload);
+    } else {
+      eventStream.publish(payload);
+    }
   });
 }
 
