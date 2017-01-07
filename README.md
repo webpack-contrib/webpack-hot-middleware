@@ -80,7 +80,6 @@ Configuration options can be passed to the client by adding querystring paramete
 ```
 
 * **path** - The path which the middleware is serving the event stream on
-* **name** - Bundle name, specifically for multi-compiler mode
 * **timeout** - The time to wait after a disconnection before attempting to reconnect
 * **overlay** - Set to `false` to disable the DOM-based client-side overlay.
 * **reload** - Set to `true` to auto-reload the page when webpack gets stuck.
@@ -95,30 +94,6 @@ The middleware installs itself as a webpack plugin, and listens for compiler eve
 Each connected client gets a [Server Sent Events](http://www.html5rocks.com/en/tutorials/eventsource/basics/) connection, the server will publish notifications to connected clients on compiler events.
 
 When the client receives a message, it will check to see if the local code is up to date. If it isn't up to date, it will trigger webpack hot module reloading.
-
-### Multi-compliler mode
-
-If you're using multi-compiler mode (exporting an array of config in `webpack.config.js`), set `name` parameters to make sure bundles don't process each other's updates. For example:
-
-```
-// webpack.config.js
-module.exports = [
-    {
-        name: 'mobile',
-        entry: {
-            vendor: 'vendor.js',
-            main: ['webpack-hot-middleware/client?name=mobile', 'mobile.js']
-        }
-    },
-    {
-        name: 'desktop',
-        entry: {
-            vendor: 'vendor.js',
-            main: ['webpack-hot-middleware/client?name=desktop', 'desktop.js']
-        }
-    }
-]
-```
 
 ## Other Frameworks
 
