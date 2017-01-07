@@ -37,13 +37,19 @@ function webpackHotMiddleware(compiler, opts) {
       this.state.current.addDependency(dep);
       return true;
     });
+
+    // Publish building stats for every compiler
+    compiler.plugin("compile", function() {
+      latestStats = null;
+      if (opts.log) opts.log("webpack: building " + (compiler.name || "") + "...");
+      eventStream.publish({
+        name: compiler.name,
+        compiler: compiler.id,
+        action: "building"
+      });
+    });
   });
 
-  compiler.plugin("compile", function() {
-    latestStats = null;
-    if (opts.log) opts.log("webpack building...");
-    eventStream.publish({action: "building"});
-  });
   compiler.plugin("done", function(statsResult) {
     // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
