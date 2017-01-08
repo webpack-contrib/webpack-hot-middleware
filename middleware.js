@@ -16,6 +16,10 @@ function webpackHotMiddleware(compiler, opts) {
   var compilers = compiler.compilers || [compiler];
   compilers.forEach(function(compiler, index) {
     compiler.id = "__WEBPACK_COMPILER_" + index + "__";
+    // NOTE: The following codes was stolen from webpack/lib/HotModuleReplacementPlugin.js.
+    // Here, we need a custom global variable __webpack_compiler__ to present the compiler
+    // who compiled the client script, so, use the same way to parse __webpack_compiler__
+    // as parsing __webpack_hash__.
     compiler.plugin("compilation", function (compilation, params) {
       var hotUpdateChunkTemplate = compilation.hotUpdateChunkTemplate;
       if(!hotUpdateChunkTemplate) return;
