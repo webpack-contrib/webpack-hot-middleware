@@ -61,11 +61,12 @@ function webpackHotMiddleware(compiler, opts) {
   });
   var middleware = function(req, res, next) {
     if (!pathMatch(req.url, opts.path)) return next();
-    eventStream.handler(req, res);
+
+    var clientId = eventStream.handler(req, res);
     if (latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
-      publishStats("sync", latestStats, eventStream, null, res);
+      publishStats("sync", latestStats, eventStream, null, clientId);
     }
   };
   middleware.publish = eventStream.publish;
@@ -73,21 +74,36 @@ function webpackHotMiddleware(compiler, opts) {
 }
 
 function createEventStream(heartbeat) {
-  var clientId = 0;
+  var nextClientId = 0;
   var clients = {};
+
   function everyClient(fn) {
-    Object.keys(clients).forEach(function(id) {
-      fn(clients[id]);
+    Object.keys(clients).forEach(function(clientId) {
+      fn(clientId);
     });
   }
-  function send(client, payload) {
-    client.write("data: " + JSON.stringify(payload) + "\n\n");
+  function send(clientId, payload) {
+    var client = clients[clientId];
+    if (
+      !client ||
+      payload === null ||
+      typeof payload === 'undefined'
+    ) {
+      return;
+    }
+
+    if (typeof payload === 'object') {
+      payload = JSON.stringify(payload);
+    }
+    client.write("data: " + payload + "\n\n");
   }
+
   setInterval(function heartbeatTick() {
-    everyClient(function(client) {
-      client.write("data: \uD83D\uDC93\n\n");
+    everyClient(function(clientId) {
+      send(clientId, "\uD83D\uDC93");
     });
   }, heartbeat).unref();
+
   return {
     handler: function(req, res) {
       req.socket.setKeepAlive(true);
@@ -98,22 +114,23 @@ function createEventStream(heartbeat) {
         'Connection': 'keep-alive'
       });
       res.write('\n');
-      var id = clientId++;
+      var id = nextClientId++;
       clients[id] = res;
       req.on("close", function(){
         delete clients[id];
       });
+      return id;
     },
     publish: function(payload) {
-      everyClient(function(client) {
-        send(client, payload);
+      everyClient(function(clientId) {
+        send(clientId, payload);
       });
     },
     send: send
   };
 }
 
-function publishStats(action, statsResult, eventStream, log, client) {
+function publishStats(action, statsResult, eventStream, log, clientId) {
   // For multi-compiler, stats will be an object with a 'children' array of stats
   var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
   bundles.forEach(function(stats, index) {
@@ -134,8 +151,8 @@ function publishStats(action, statsResult, eventStream, log, client) {
       errors: stats.errors || [],
       modules: buildModuleMap(stats.modules)
     };
-    if (client) {
-      eventStream.send(client, payload);
+    if (typeof clientId !== 'undefined') {
+      eventStream.send(clientId, payload);
     } else {
       eventStream.publish(payload);
     }
