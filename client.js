@@ -90,9 +90,12 @@ function connect(EventSource) {
 // we only want to report once.
 // all the errors will go to all clients
 var singletonKey = '__webpack_hot_middleware_reporter__';
-var reporter = window && window[singletonKey];
-if (typeof window !== 'undefined' && !reporter) {
-  reporter = window[singletonKey] = createReporter();
+var reporter;
+if (typeof window !== 'undefined') {
+  if (!window[singletonKey]) {
+    window[singletonKey] = createReporter();
+  }
+  reporter = window[singletonKey];
 }
 
 function createReporter() {
