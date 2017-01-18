@@ -18,13 +18,14 @@ npm install --save-dev webpack-hot-middleware
 
 Next, enable hot reloading in your webpack config:
 
- 1. Add the following plugins to the `plugins` array:
+ 1. Add the following three plugins to the `plugins` array:
     ```js
     plugins: [
-        // Webpack 1.0
+        // Webpack 1.0:
         new webpack.optimize.OccurenceOrderPlugin(),
         // Webpack 2.0 fixed this mispelling
-        // new webpack.optimize.OccurrenceOrderPlugin(),
+        new webpack.optimize.OccurrenceOrderPlugin(),
+
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin()
     ]
