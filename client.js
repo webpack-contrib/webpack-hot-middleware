@@ -1,5 +1,5 @@
 /*eslint-env browser*/
-/*global __resourceQuery __webpack_public_path__*/
+/*global __resourceQuery __webpack_public_path__ __webpack_compiler__*/
 
 var options = {
   path: "/__webpack_hmr",
@@ -7,8 +7,7 @@ var options = {
   overlay: true,
   reload: false,
   log: true,
-  warn: true,
-  name: ''
+  warn: true
 };
 if (__resourceQuery) {
   var querystring = require('querystring');
@@ -19,9 +18,6 @@ if (__resourceQuery) {
   if (overrides.reload) options.reload = overrides.reload !== 'false';
   if (overrides.noInfo && overrides.noInfo !== 'false') {
     options.log = false;
-  }
-  if (overrides.name) {
-    options.name = overrides.name 
   }
   if (overrides.quiet && overrides.quiet !== 'false') {
     options.log = false;
@@ -161,6 +157,12 @@ var processUpdate = require('./process-update');
 var customHandler;
 var subscribeAllHandler;
 function processMessage(obj) {
+  if (
+    typeof __webpack_compiler__ !== 'undefined' &&
+    obj.compiler !== __webpack_compiler__
+  ) {
+    return;
+  }
   switch(obj.action) {
     case "building":
       if (options.log) {
@@ -179,9 +181,6 @@ function processMessage(obj) {
       }
       // fall through
     case "sync":
-      if (obj.name && options.name && obj.name !== options.name) {
-        return;
-      }
       if (obj.errors.length > 0) {
         if (reporter) reporter.problems('errors', obj);
       } else {

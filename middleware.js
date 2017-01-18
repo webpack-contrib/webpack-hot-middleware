@@ -2,6 +2,7 @@ module.exports = webpackHotMiddleware;
 
 var helpers = require('./helpers');
 var pathMatch = helpers.pathMatch;
+var detectConstDependency = helpers.detectConstDependency;
 
 function webpackHotMiddleware(compiler, opts) {
   opts = opts || {};
@@ -12,11 +13,47 @@ function webpackHotMiddleware(compiler, opts) {
   var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
 
-  compiler.plugin("compile", function() {
-    latestStats = null;
-    if (opts.log) opts.log("webpack building...");
-    eventStream.publish({action: "building"});
+  var compilers = compiler.compilers || [compiler];
+  compilers.forEach(function(compiler, index) {
+    compiler.id = "__WEBPACK_COMPILER_" + index + "__";
+    // NOTE: The following codes was stolen from webpack/lib/HotModuleReplacementPlugin.js.
+    // Here, we need a custom global variable __webpack_compiler__ to present the compiler
+    // who compiled the client script, so, use the same way to parse __webpack_compiler__
+    // as parsing __webpack_hash__.
+    compiler.plugin("compilation", function (compilation, params) {
+      var hotUpdateChunkTemplate = compilation.hotUpdateChunkTemplate;
+      if(!hotUpdateChunkTemplate) return;
+
+      compilation.mainTemplate.plugin("require-extensions", function(source) {
+        var buf = [source];
+        buf.push("");
+        buf.push("// __webpack_compiler__");
+        buf.push(this.requireFn + ".compiler = function() { return " + JSON.stringify(compiler.id) + "; };");
+        return this.asString(buf);
+      });
+    });
+    compiler.parser.plugin("expression __webpack_compiler__", function(expr) {
+      var ConstDependency = detectConstDependency(this.state.compilation);
+      if (!ConstDependency) return true;
+
+      var dep = new ConstDependency("__webpack_require__.compiler()", expr.range);
+      dep.loc = expr.loc;
+      this.state.current.addDependency(dep);
+      return true;
+    });
+
+    // Publish building stats for every compiler
+    compiler.plugin("compile", function() {
+      latestStats = null;
+      if (opts.log) opts.log("webpack: building " + (compiler.name || "") + "...");
+      eventStream.publish({
+        name: compiler.name,
+        compiler: compiler.id,
+        action: "building"
+      });
+    });
   });
+
   compiler.plugin("done", function(statsResult) {
     // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
@@ -24,11 +61,12 @@ function webpackHotMiddleware(compiler, opts) {
   });
   var middleware = function(req, res, next) {
     if (!pathMatch(req.url, opts.path)) return next();
-    eventStream.handler(req, res);
+
+    var clientId = eventStream.handler(req, res);
     if (latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
-      publishStats("sync", latestStats, eventStream);
+      publishStats("sync", latestStats, eventStream, null, clientId);
     }
   };
   middleware.publish = eventStream.publish;
@@ -36,18 +74,36 @@ function webpackHotMiddleware(compiler, opts) {
 }
 
 function createEventStream(heartbeat) {
-  var clientId = 0;
+  var nextClientId = 0;
   var clients = {};
+
   function everyClient(fn) {
-    Object.keys(clients).forEach(function(id) {
-      fn(clients[id]);
+    Object.keys(clients).forEach(function(clientId) {
+      fn(clientId);
     });
   }
+  function send(clientId, payload) {
+    var client = clients[clientId];
+    if (
+      !client ||
+      payload === null ||
+      typeof payload === 'undefined'
+    ) {
+      return;
+    }
+
+    if (typeof payload === 'object') {
+      payload = JSON.stringify(payload);
+    }
+    client.write("data: " + payload + "\n\n");
+  }
+
   setInterval(function heartbeatTick() {
-    everyClient(function(client) {
-      client.write("data: \uD83D\uDC93\n\n");
+    everyClient(function(clientId) {
+      send(clientId, "\uD83D\uDC93");
     });
   }, heartbeat).unref();
+
   return {
     handler: function(req, res) {
       req.socket.setKeepAlive(true);
@@ -58,37 +114,48 @@ function createEventStream(heartbeat) {
         'Connection': 'keep-alive'
       });
       res.write('\n');
-      var id = clientId++;
+      var id = nextClientId++;
       clients[id] = res;
       req.on("close", function(){
         delete clients[id];
       });
+      return id;
     },
     publish: function(payload) {
-      everyClient(function(client) {
-        client.write("data: " + JSON.stringify(payload) + "\n\n");
+      everyClient(function(clientId) {
+        send(clientId, payload);
       });
-    }
+    },
+    send: send
   };
 }
 
-function publishStats(action, statsResult, eventStream, log) {
+function publishStats(action, statsResult, eventStream, log, clientId) {
   // For multi-compiler, stats will be an object with a 'children' array of stats
   var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
-  bundles.forEach(function(stats) {
+  bundles.forEach(function(stats, index) {
     if (log) {
       log("webpack built " + (stats.name ? stats.name + " " : "") +
         stats.hash + " in " + stats.time + "ms");
     }
-    eventStream.publish({
+    var compiler = statsResult.stats
+      ? statsResult.stats[index].compilation.compiler.id
+      : statsResult.compilation.compiler.id;
+    var payload = {
       name: stats.name,
+      compiler: compiler,
       action: action,
       time: stats.time,
       hash: stats.hash,
       warnings: stats.warnings || [],
       errors: stats.errors || [],
       modules: buildModuleMap(stats.modules)
-    });
+    };
+    if (typeof clientId !== 'undefined') {
+      eventStream.send(clientId, payload);
+    } else {
+      eventStream.publish(payload);
+    }
   });
 }
 

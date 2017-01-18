@@ -100,44 +100,6 @@ describe("client", function() {
     it("should test more of the client's functionality");
   });
 
-  context("with name options", function() {
-    beforeEach(function setup() {
-      global.__resourceQuery = '?name=test'; // eslint-disable-line no-underscore-dangle
-      global.window = {
-        EventSource: sinon.stub().returns({
-          close: sinon.spy()
-        })
-      };
-    });
-    beforeEach(loadClient);
-    it("should not trigger webpack if event obj name is different", function() {
-      var eventSource = window.EventSource.lastCall.returnValue;
-      eventSource.onmessage(makeMessage({
-        name: 'foo',
-        action: 'built',
-        time: 100,
-        hash: 'deadbeeffeddad',
-        errors: [],
-        warnings: [],
-        modules: []
-      }));
-      sinon.assert.notCalled(processUpdate);
-    });
-    it("should not trigger webpack on successful syncs if obj name is different", function() {
-      var eventSource = window.EventSource.lastCall.returnValue;
-      eventSource.onmessage(makeMessage({
-        name: 'bar',
-        action: 'sync',
-        time: 100,
-        hash: 'deadbeeffeddad',
-        errors: [],
-        warnings: [],
-        modules: []
-      }));
-      sinon.assert.notCalled(processUpdate);
-    });
-  });
-
   context("with no browser environment", function() {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
@@ -159,6 +121,44 @@ describe("client", function() {
     it("should emit warning and not connect", function() {
       sinon.assert.calledOnce(console.warn);
       sinon.assert.calledWithMatch(console.warn, /EventSource/);
+    });
+  });
+
+  context("with multiple compiler", function() {
+    beforeEach(function setup() {
+      global.__webpack_compiler__ = '__WEBPACK_COMPILER_0__'; // eslint-disable-line no-underscore-dangle
+      global.window = {
+        EventSource: sinon.stub().returns({
+          close: sinon.spy()
+        })
+      };
+    });
+    beforeEach(loadClient);
+    it("should trigger webpack if event obj compiler is the same one", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        compiler: '__WEBPACK_COMPILER_0__',
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.calledOnce(processUpdate);
+    });
+    it("should not trigger webpack if event obj compiler is different", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        compiler: '__WEBPACK_COMPILER_1__',
+        action: 'sync',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.notCalled(processUpdate);
     });
   });
 
