@@ -18,7 +18,7 @@ npm install --save-dev webpack-hot-middleware
 
 Next, enable hot reloading in your webpack config:
 
- 1. Add the following three plugins to the `plugins` array:
+ 1. Add the following plugins to the `plugins` array:
     ```js
     plugins: [
         // Webpack 1.0
