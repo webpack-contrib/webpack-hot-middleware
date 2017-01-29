@@ -21,7 +21,7 @@ if (__resourceQuery) {
     options.log = false;
   }
   if (overrides.name) {
-    options.name = overrides.name 
+    options.name = overrides.name;
   }
   if (overrides.quiet && overrides.quiet !== 'false') {
     options.log = false;
@@ -41,22 +41,27 @@ if (typeof window === 'undefined') {
     "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools"
   );
 } else {
-  connect(window.EventSource);
+  connect();
 }
 
-function connect(EventSource) {
-  var source = new EventSource(options.path);
+function EventSourceWrapper() {
+  var source;
   var lastActivity = new Date();
+  var listeners = [];
 
-  source.onopen = handleOnline;
-  source.onmessage = handleMessage;
-  source.onerror = handleDisconnect;
-
+  init();
   var timer = setInterval(function() {
     if ((new Date() - lastActivity) > options.timeout) {
       handleDisconnect();
     }
   }, options.timeout / 2);
+
+  function init() {
+    source = new window.EventSource(options.path);
+    source.onopen = handleOnline;
+    source.onerror = handleDisconnect;
+    source.onmessage = handleMessage;
+  }
 
   function handleOnline() {
     if (options.log) console.log("[HMR] connected");
@@ -65,6 +70,40 @@ function connect(EventSource) {
 
   function handleMessage(event) {
     lastActivity = new Date();
+    for (var i = 0; i < listeners.length; i++) {
+      listeners[i](event);
+    }
+  }
+
+  function handleDisconnect() {
+    clearInterval(timer);
+    source.close();
+    setTimeout(init, options.timeout);
+  }
+
+  return {
+    addMessageListener(fn) {
+      listeners.push(fn);
+    }
+  }
+}
+
+function getEventSourceWrapper() {
+  if (!window.__whmEventSourceWrapper) {
+    window.__whmEventSourceWrapper = {};
+  }
+  if (!window.__whmEventSourceWrapper[options.path]) {
+    // cache the wrapper for other entries loaded on
+    // the same page with the same options.path
+    window.__whmEventSourceWrapper[options.path] = EventSourceWrapper();
+  }
+  return window.__whmEventSourceWrapper[options.path];
+}
+
+function connect() {
+  getEventSourceWrapper().addMessageListener(handleMessage);
+
+  function handleMessage(event) {
     if (event.data == "\uD83D\uDC93") {
       return;
     }
@@ -76,13 +115,6 @@ function connect(EventSource) {
       }
     }
   }
-
-  function handleDisconnect() {
-    clearInterval(timer);
-    source.close();
-    setTimeout(function() { connect(EventSource); }, options.timeout);
-  }
-
 }
 
 // the reporter needs to be a singleton on the page
