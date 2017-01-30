@@ -82,10 +82,10 @@ function EventSourceWrapper() {
   }
 
   return {
-    addMessageListener(fn) {
+    addMessageListener: function(fn) {
       listeners.push(fn);
     }
-  }
+  };
 }
 
 function getEventSourceWrapper() {
