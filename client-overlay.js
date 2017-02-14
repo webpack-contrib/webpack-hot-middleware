@@ -1,6 +1,7 @@
 /*eslint-env browser*/
 
 var clientOverlay = document.createElement('div');
+clientOverlay.id = 'webpack-hot-middleware-clientOverlay';
 var styles = {
   background: 'rgba(0,0,0,0.85)',
   color: '#E8E8E8',
@@ -16,7 +17,8 @@ var styles = {
   top: 0,
   bottom: 0,
   overflow: 'auto',
-  dir: 'ltr'
+  dir: 'ltr',
+  textAlign: 'left'
 };
 for (var key in styles) {
   clientOverlay.style[key] = styles[key];
