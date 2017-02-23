@@ -24,7 +24,7 @@
   "author": "Glen Mailer <glen@stainlessed.co.uk>",
   "license": "MIT",
   "dependencies": {
-    "ansi-html": "0.0.6",
+    "ansi-html": "0.0.7",
     "html-entities": "^1.2.0",
     "querystring": "^0.2.0",
     "strip-ansi": "^3.0.0"
