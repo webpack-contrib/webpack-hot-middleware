@@ -2,7 +2,7 @@
 
 Webpack hot reloading using only [webpack-dev-middleware](http://webpack.github.io/docs/webpack-dev-middleware.html). This allows you to add hot reloading into an existing server without [webpack-dev-server](http://webpack.github.io/docs/webpack-dev-server.html).
 
-This module is **only** concerned with the mechanisms to connect a browser client to a webpack server & receive updates. It will subscribe to changes from the server and execute those changes using [webpack's HMR api](http://webpack.github.io/docs/hot-module-replacement-with-webpack.html). Actually making your application capable of using hot reloading to make seamless changes is out of scope, and usually handled by another library.
+This module is **only** concerned with the mechanisms to connect a browser client to a webpack server & receive updates. It will subscribe to changes from the server and execute those changes using [webpack's HMR API](http://webpack.github.io/docs/hot-module-replacement-with-webpack.html). Actually making your application capable of using hot reloading to make seamless changes is out of scope, and usually handled by another library.
 
 [![npm version](https://img.shields.io/npm/v/webpack-hot-middleware.svg)](https://www.npmjs.com/package/webpack-hot-middleware) [![Build Status](https://img.shields.io/travis/glenjamin/webpack-hot-middleware/master.svg)](https://travis-ci.org/glenjamin/webpack-hot-middleware) [![Coverage Status](https://coveralls.io/repos/glenjamin/webpack-hot-middleware/badge.svg?branch=master)](https://coveralls.io/r/glenjamin/webpack-hot-middleware?branch=master) ![MIT Licensed](https://img.shields.io/npm/l/webpack-hot-middleware.svg)
 
