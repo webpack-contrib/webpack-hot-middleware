@@ -140,7 +140,7 @@ function createReporter() {
 
   var styles = {
     errors: "color: #ff0000;",
-    warnings: "color: #5c3b00;"
+    warnings: "color: #999933;"
   };
   var previousProblems = null;
   function log(type, obj) {
