@@ -31,6 +31,11 @@ function webpackHotMiddleware(compiler, opts) {
       publishStats("sync", latestStats, eventStream);
     }
   };
+  var koaMiddleware = function*(next) {
+    if (!pathMatch(this.url, opts.path)) return yield next;
+    eventStream.handler(this.req, this.res);
+  }
+  middleware = !opts.koa ? middleware : koaMiddleware;
   middleware.publish = eventStream.publish;
   return middleware;
 }
