@@ -56,7 +56,7 @@ module.exports = function(hash, moduleMap, options) {
         applyResult.then(function(outdatedModules) {
           applyCallback(null, outdatedModules);
         });
-        applyResult.catch(applyCallback);
+        applyResult['catch'](applyCallback);
       }
 
     };
@@ -67,7 +67,7 @@ module.exports = function(hash, moduleMap, options) {
         result.then(function(updatedModules) {
             cb(null, updatedModules);
         });
-        result.catch(cb);
+        result.['catch'](cb);
     }
   }
 
