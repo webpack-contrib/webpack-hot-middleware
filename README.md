@@ -26,7 +26,7 @@ Next, enable hot reloading in your webpack config:
         // OccurenceOrderPlugin is needed for webpack 1.x only
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin()
+        new webpack.NoEmitOnErrorsPlugin()
     ]
     ```
 
