@@ -138,6 +138,31 @@ describe("client", function() {
     });
   });
 
+  context("with dynamicPublicPath options", function() {
+    beforeEach(function setup() {
+      global.__resourceQuery = '?dynamicPublicPath=true'; // eslint-disable-line no-underscore-dangle
+      global.window = {
+        EventSource: sinon.stub().returns({
+          close: sinon.spy()
+        })
+      };
+    });
+    it("should use webpack public path", function() {
+      global.__webpack_public_path__ = '/prefix'
+      loadClient();
+      sinon.assert.calledOnce(window.EventSource);
+      sinon.assert.calledWithNew(window.EventSource);
+      sinon.assert.calledWith(window.EventSource, '/prefix/__webpack_hmr');
+    });
+    it('should handle trailing slash correctly', function() {
+      global.__webpack_public_path__ = '/prefix/'
+      loadClient();
+      sinon.assert.calledOnce(window.EventSource);
+      sinon.assert.calledWithNew(window.EventSource);
+      sinon.assert.calledWith(window.EventSource, '/prefix/__webpack_hmr');
+    })
+  });
+
   context("with no browser environment", function() {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle

@@ -11,6 +11,7 @@ var options = {
   name: ''
 };
 if (__resourceQuery) {
+  var path = require('path-browserify');
   var querystring = require('querystring');
   var overrides = querystring.parse(__resourceQuery.slice(1));
   if (overrides.path) options.path = overrides.path;
@@ -28,7 +29,7 @@ if (__resourceQuery) {
     options.warn = false;
   }
   if (overrides.dynamicPublicPath) {
-    options.path = __webpack_public_path__ + options.path;
+    options.path = path.join(__webpack_public_path__, options.path);
   }
 }
 
