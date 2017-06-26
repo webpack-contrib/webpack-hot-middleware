@@ -55,7 +55,10 @@ function createEventStream(heartbeat) {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'text/event-stream;charset=utf-8',
         'Cache-Control': 'no-cache, no-transform',
-        'Connection': 'keep-alive'
+        'Connection': 'keep-alive',
+        // While behind nginx, event stream should not be buffered:
+        // http://nginx.org/docs/http/ngx_http_proxy_module.html#proxy_buffering
+        'X-Accel-Buffering': 'no'
       });
       res.write('\n');
       var id = clientId++;
