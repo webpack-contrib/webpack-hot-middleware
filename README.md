@@ -1,8 +1,8 @@
 # Webpack Hot Middleware
 
-Webpack hot reloading using only [webpack-dev-middleware](http://webpack.github.io/docs/webpack-dev-middleware.html). This allows you to add hot reloading into an existing server without [webpack-dev-server](http://webpack.github.io/docs/webpack-dev-server.html).
+Webpack hot reloading using only [webpack-dev-middleware](https://webpack.js.org/guides/development/#webpack-dev-middleware). This allows you to add hot reloading into an existing server without [webpack-dev-server](https://webpack.js.org/configuration/dev-server/).
 
-This module is **only** concerned with the mechanisms to connect a browser client to a webpack server & receive updates. It will subscribe to changes from the server and execute those changes using [webpack's HMR API](http://webpack.github.io/docs/hot-module-replacement-with-webpack.html). Actually making your application capable of using hot reloading to make seamless changes is out of scope, and usually handled by another library.
+This module is **only** concerned with the mechanisms to connect a browser client to a webpack server & receive updates. It will subscribe to changes from the server and execute those changes using [webpack's HMR API](https://webpack.js.org/concepts/hot-module-replacement/). Actually making your application capable of using hot reloading to make seamless changes is out of scope, and usually handled by another library.
 
 If you're using React then some common options are [react-transform-hmr](https://github.com/gaearon/react-transform-hmr/) and [react-hot-loader](https://github.com/gaearon/react-hot-loader).
 
@@ -88,7 +88,7 @@ Configuration options can be passed to the client by adding querystring paramete
 * **reload** - Set to `true` to auto-reload the page when webpack gets stuck.
 * **noInfo** - Set to `true` to disable informational console logging.
 * **quiet** - Set to `true` to disable all console logging.
-* **dynamicPublicPath** - Set to `true` to use webpack `publicPath` as prefix of `path`. (We can set `__webpack_public_path__` dynamically at runtime in the entry point, see note of [output.publicPath](https://webpack.github.io/docs/configuration.html#output-publicpath))
+* **dynamicPublicPath** - Set to `true` to use webpack `publicPath` as prefix of `path`. (We can set `__webpack_public_path__` dynamically at runtime in the entry point, see note of [output.publicPath](https://webpack.js.org/configuration/output/#output-publicpath))
 
 #### Middleware
 
@@ -164,7 +164,7 @@ This module expects to remain running while you make changes to your webpack bun
 
 ### Use with multiple entry points in webpack
 
-If you want to use [multiple entry points in your webpack config](https://webpack.github.io/docs/multiple-entry-points.html) you need to include the hot middleware client in each entry point. This ensures that each entry point file knows how to handle hot updates. See the [examples folder README](example/README.md) for an example.
+If you want to use [multiple entry points in your webpack config](https://webpack.js.org/concepts/output/#multiple-entry-points) you need to include the hot middleware client in each entry point. This ensures that each entry point file knows how to handle hot updates. See the [examples folder README](example/README.md) for an example.
 
 ```js
 entry: {
