@@ -10,7 +10,7 @@ if (!module.hot) {
   throw new Error("[HMR] Hot Module Replacement is disabled.");
 }
 
-var hmrDocsUrl = "http://webpack.github.io/docs/hot-module-replacement-with-webpack.html"; // eslint-disable-line max-len
+var hmrDocsUrl = "https://webpack.js.org/concepts/hot-module-replacement/"; // eslint-disable-line max-len
 
 var lastHash;
 var failureStatuses = { abort: 1, fail: 1 };
