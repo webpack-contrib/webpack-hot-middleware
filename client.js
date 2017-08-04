@@ -7,6 +7,7 @@ var options = {
   overlay: true,
   reload: false,
   log: true,
+  logBrowser: true,
   warn: true,
   name: ''
 };
@@ -26,6 +27,9 @@ if (__resourceQuery) {
   if (overrides.quiet && overrides.quiet !== 'false') {
     options.log = false;
     options.warn = false;
+  }
+  if (overrides.logOutput === 'console') {
+    options.logBrowser = false;
   }
   if (overrides.dynamicPublicPath) {
     options.path = __webpack_public_path__ + options.path;
@@ -211,7 +215,8 @@ function processMessage(obj) {
       }
       // fall through
     case "sync":
-      if (obj.name && options.name && obj.name !== options.name) {
+      if (obj.name && options.name && obj.name !== options.name ||
+          !options.logBrowser) {
         return;
       }
       if (obj.errors.length > 0) {
