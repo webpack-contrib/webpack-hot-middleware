@@ -31,6 +31,7 @@ if (typeof window === 'undefined') {
   }
 }
 
+/* istanbul ignore next */
 function setOptions(overrides) {
   setOverrides(overrides);
   connect();
