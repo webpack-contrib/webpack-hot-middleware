@@ -9,7 +9,7 @@ var options = {
   log: true,
   warn: true,
   name: '',
-  autoConnect: true // setting to false will prevent connection from being opened automatically, allowing option manipulation using setOptions
+  autoConnect: true
 };
 if (__resourceQuery) {
   var querystring = require('querystring');
@@ -32,7 +32,7 @@ if (typeof window === 'undefined') {
 }
 
 /* istanbul ignore next */
-function setOptions(overrides) {
+function setOptionsAndConnect(overrides) {
   setOverrides(overrides);
   connect();
 }
@@ -265,6 +265,6 @@ if (module) {
     useCustomOverlay: function useCustomOverlay(customOverlay) {
       if (reporter) reporter.useCustomOverlay(customOverlay);
     },
-    setOptions
+    setOptionsAndConnect
   };
 }
