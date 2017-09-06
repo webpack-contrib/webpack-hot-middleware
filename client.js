@@ -8,11 +8,37 @@ var options = {
   reload: false,
   log: true,
   warn: true,
-  name: ''
+  name: '',
+  autoConnect: true
 };
 if (__resourceQuery) {
   var querystring = require('querystring');
   var overrides = querystring.parse(__resourceQuery.slice(1));
+  setOverrides(overrides);
+}
+
+if (typeof window === 'undefined') {
+  // do nothing
+} else if (typeof window.EventSource === 'undefined') {
+  console.warn(
+    "webpack-hot-middleware's client requires EventSource to work. " +
+    "You should include a polyfill if you want to support this browser: " +
+    "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools"
+  );
+} else {
+  if (options.autoConnect) {
+    connect();
+  }
+}
+
+/* istanbul ignore next */
+function setOptionsAndConnect(overrides) {
+  setOverrides(overrides);
+  connect();
+}
+
+function setOverrides(overrides) {
+  if (overrides.autoConnect) options.autoConnect = overrides.autoConnect == 'true';
   if (overrides.path) options.path = overrides.path;
   if (overrides.timeout) options.timeout = overrides.timeout;
   if (overrides.overlay) options.overlay = overrides.overlay !== 'false';
@@ -27,21 +53,10 @@ if (__resourceQuery) {
     options.log = false;
     options.warn = false;
   }
+
   if (overrides.dynamicPublicPath) {
     options.path = __webpack_public_path__ + options.path;
   }
-}
-
-if (typeof window === 'undefined') {
-  // do nothing
-} else if (typeof window.EventSource === 'undefined') {
-  console.warn(
-    "webpack-hot-middleware's client requires EventSource to work. " +
-    "You should include a polyfill if you want to support this browser: " +
-    "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools"
-  );
-} else {
-  connect();
 }
 
 function EventSourceWrapper() {
@@ -249,6 +264,7 @@ if (module) {
     },
     useCustomOverlay: function useCustomOverlay(customOverlay) {
       if (reporter) reporter.useCustomOverlay(customOverlay);
-    }
+    },
+    setOptionsAndConnect
   };
 }
