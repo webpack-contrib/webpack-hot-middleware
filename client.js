@@ -265,6 +265,6 @@ if (module) {
     useCustomOverlay: function useCustomOverlay(customOverlay) {
       if (reporter) reporter.useCustomOverlay(customOverlay);
     },
-    setOptionsAndConnect
+    setOptionsAndConnect: setOptionsAndConnect
   };
 }
