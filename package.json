@@ -15,7 +15,8 @@
   "main": "middleware.js",
   "scripts": {
     "test": "mocha",
-    "travis": "istanbul cover _mocha --"
+    "travis": "istanbul cover _mocha --",
+    "lint": "eslint . --max-warnings 0"
   },
   "repository": {
     "type": "git",
@@ -30,11 +31,12 @@
     "strip-ansi": "^3.0.0"
   },
   "devDependencies": {
-    "express": "^4.13.3",
-    "mocha": "^2.3.2",
-    "supertest": "^1.1.0",
-    "sinon": "^1.12.2",
     "coveralls": "^2.11.2",
-    "istanbul": "^0.4.2"
+    "eslint": "^4.6.1",
+    "express": "^4.13.3",
+    "istanbul": "^0.4.2",
+    "mocha": "^2.3.2",
+    "sinon": "^1.12.2",
+    "supertest": "^1.1.0"
   }
 }
