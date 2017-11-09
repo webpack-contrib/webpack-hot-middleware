@@ -12,7 +12,7 @@ function webpackHotMiddleware(compiler, opts) {
   var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
 
-  compiler.plugin("compile", function() {
+  compiler.plugin("invalid", function() {
     latestStats = null;
     if (opts.log) opts.log("webpack building...");
     eventStream.publish({action: "building"});
