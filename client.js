@@ -9,7 +9,9 @@ var options = {
   log: true,
   warn: true,
   name: '',
-  autoConnect: true
+  autoConnect: true,
+  overlayStyles: {},
+  ansiColors: {}
 };
 if (__resourceQuery) {
   var querystring = require('querystring');
@@ -57,6 +59,9 @@ function setOverrides(overrides) {
   if (overrides.dynamicPublicPath) {
     options.path = __webpack_public_path__ + options.path;
   }
+
+  if (overrides.ansiColors) options.ansiColors = JSON.parse(overrides.ansiColors);
+  if (overrides.overlayStyles) options.overlayStyles = JSON.parse(overrides.overlayStyles);
 }
 
 function EventSourceWrapper() {
@@ -150,7 +155,10 @@ function createReporter() {
 
   var overlay;
   if (typeof document !== 'undefined' && options.overlay) {
-    overlay = require('./client-overlay');
+    overlay = require('./client-overlay')({
+      ansiColors: options.ansiColors,
+      overlayStyles: options.overlayStyles
+    });
   }
 
   var styles = {
