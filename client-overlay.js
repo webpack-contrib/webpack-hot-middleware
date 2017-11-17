@@ -20,9 +20,6 @@ var styles = {
   dir: 'ltr',
   textAlign: 'left'
 };
-for (var key in styles) {
-  clientOverlay.style[key] = styles[key];
-}
 
 var ansiHTML = require('ansi-html');
 var colors = {
@@ -37,12 +34,10 @@ var colors = {
   lightgrey: 'EBE7E3',
   darkgrey: '6D7891'
 };
-ansiHTML.setColors(colors);
 
 var Entities = require('html-entities').AllHtmlEntities;
 var entities = new Entities();
 
-exports.showProblems =
 function showProblems(type, lines) {
   clientOverlay.innerHTML = '';
   lines.forEach(function(msg) {
@@ -55,21 +50,19 @@ function showProblems(type, lines) {
   if (document.body) {
     document.body.appendChild(clientOverlay);
   }
-};
+}
 
-exports.clear =
 function clear() {
   if (document.body && clientOverlay.parentNode) {
     document.body.removeChild(clientOverlay);
   }
-};
-
-var problemColors = {
-  errors: colors.red,
-  warnings: colors.yellow
-};
+}
 
 function problemType (type) {
+  var problemColors = {
+    errors: colors.red,
+    warnings: colors.yellow
+  };
   var color = problemColors[type] || colors.red;
   return (
     '<span style="background-color:#' + color + '; color:#fff; padding:2px 4px; border-radius: 2px">' +
@@ -77,3 +70,28 @@ function problemType (type) {
     '</span>'
   );
 }
+
+module.exports = function(options) {
+  for (var color in options.overlayColors) {
+    if (color in colors) {
+      colors[color] = options.overlayColors[color];
+    }
+    ansiHTML.setColors(colors);
+  }
+
+  for (var style in options.overlayStyles) {
+    styles[style] = options.overlayStyles[style];
+  }
+
+  for (var key in styles) {
+    clientOverlay.style[key] = styles[key];
+  }
+
+  return {
+    showProblems: showProblems,
+    clear: clear
+  }
+};
+
+module.exports.clear = clear;
+module.exports.showProblems = showProblems;
