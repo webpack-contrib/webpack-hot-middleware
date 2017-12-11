@@ -11,6 +11,7 @@ var options = {
   name: '',
   autoConnect: true,
   overlayStyles: {},
+  overlayWarnings: false,
   ansiColors: {}
 };
 if (__resourceQuery) {
@@ -62,6 +63,7 @@ function setOverrides(overrides) {
 
   if (overrides.ansiColors) options.ansiColors = JSON.parse(overrides.ansiColors);
   if (overrides.overlayStyles) options.overlayStyles = JSON.parse(overrides.overlayStyles);
+  if (overrides.overlayWarnings) options.overlayWarnings = JSON.parse(overrides.overlayWarnings);
 }
 
 function EventSourceWrapper() {
@@ -200,7 +202,9 @@ function createReporter() {
       if (options.warn) {
         log(type, obj);
       }
-      if (overlay && type !== 'warnings') overlay.showProblems(type, obj[type]);
+      if (overlay && (options.overlayWarnings || type !== 'warnings')) {
+        overlay.showProblems(type, obj[type]);
+      }
     },
     success: function() {
       if (overlay) overlay.clear();
@@ -239,15 +243,11 @@ function processMessage(obj) {
       }
       if (obj.errors.length > 0) {
         if (reporter) reporter.problems('errors', obj);
+      } else if (obj.warnings.length > 0) {
+        if (reporter) reporter.problems('warnings', obj);
       } else {
-        if (reporter) {
-          if (obj.warnings.length > 0) {
-            reporter.problems('warnings', obj);
-          } else {
-            reporter.cleanProblemsCache();
-          }
-          reporter.success();
-        }
+        reporter.cleanProblemsCache();
+        reporter.success();
         processUpdate(obj.hash, obj.modules, options);
       }
       break;
