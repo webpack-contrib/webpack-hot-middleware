@@ -167,7 +167,7 @@ Use the [hapi-webpack-plugin](https://www.npmjs.com/package/hapi-webpack-plugin)
 wraps this module for use with Koa 1.x
 
 [koa-webpack](https://www.npmjs.com/package/koa-webpack)
-wraps this module for use with Koa 2.x
+can be used for Koa 2.x
 
 ## Troubleshooting
 
