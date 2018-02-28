@@ -12,16 +12,23 @@ function webpackHotMiddleware(compiler, opts) {
   var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
 
-  compiler.plugin("compile", function() {
+  if (compiler.hooks) {
+    compiler.hooks.compile.tap("webpack-hot-middleware", onCompile);
+    compiler.hooks.done.tap("webpack-hot-middleware", onDone);
+  } else {
+    compiler.plugin("compile", onCompile);
+    compiler.plugin("done", onDone);
+  }
+  function onCompile() {
     latestStats = null;
     if (opts.log) opts.log("webpack building...");
     eventStream.publish({action: "building"});
-  });
-  compiler.plugin("done", function(statsResult) {
+  }
+  function onDone(statsResult) {
     // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
     publishStats("built", latestStats, eventStream, opts.log);
-  });
+  }
   var middleware = function(req, res, next) {
     if (!pathMatch(req.url, opts.path)) return next();
     eventStream.handler(req, res);
