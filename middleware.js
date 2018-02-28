@@ -87,7 +87,11 @@ function publishStats(action, statsResult, eventStream, log) {
   var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
   bundles.forEach(function(stats) {
     if (log) {
-      log("webpack built " + (stats.name ? stats.name + " " : "") +
+      var date = new Date();
+      var n = date.toDateString();
+      var time = date.toLocaleTimeString();
+      var niceDate = (n + ' ' + time);
+      log(niceDate + " webpack built " + (stats.name ? stats.name + " " : "") +
         stats.hash + " in " + stats.time + "ms");
     }
     eventStream.publish({
