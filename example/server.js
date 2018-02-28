@@ -2,6 +2,8 @@ var http = require('http');
 
 var express = require('express');
 
+require('console-stamp')(console, "HH:MM:ss.l");
+
 var app = express();
 
 app.use(require('morgan')('short'));
@@ -18,7 +20,7 @@ app.use(require('morgan')('short'));
 
   // Step 2: Attach the dev middleware to the compiler & the server
   app.use(require("webpack-dev-middleware")(compiler, {
-    noInfo: true, publicPath: webpackConfig.output.publicPath
+    logLevel: 'warn', publicPath: webpackConfig.output.publicPath
   }));
 
   // Step 3: Attach the hot middleware to the compiler & the server

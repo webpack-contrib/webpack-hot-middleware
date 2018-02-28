@@ -1,6 +1,7 @@
 var webpack = require('webpack');
 
 module.exports = {
+  mode: 'development',
   context: __dirname,
   entry: [
     // Add the client which connects to our middleware
