@@ -13,13 +13,13 @@ function webpackHotMiddleware(compiler, opts) {
   var latestStats = null;
 
   if (compiler.hooks) {
-    compiler.hooks.compile.tap("webpack-hot-middleware", onCompile);
+    compiler.hooks.invalid.tap("webpack-hot-middleware", onInvalid);
     compiler.hooks.done.tap("webpack-hot-middleware", onDone);
   } else {
-    compiler.plugin("compile", onCompile);
+    compiler.plugin("invalid", onInvalid);
     compiler.plugin("done", onDone);
   }
-  function onCompile() {
+  function onInvalid() {
     latestStats = null;
     if (opts.log) opts.log("webpack building...");
     eventStream.publish({action: "building"});
