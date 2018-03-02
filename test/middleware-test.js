@@ -51,7 +51,7 @@ describe("middleware", function() {
 
           res.on('data', verify);
 
-          compiler.emit("compile");
+          compiler.emit("invalid");
 
           function verify() {
             assert.equal(res.events.length, 1);
@@ -156,7 +156,7 @@ describe("middleware", function() {
       function when() {
         if (++when.n < 2) return;
 
-        compiler.emit("compile");
+        compiler.emit("invalid");
       }
 
       // Finish test when both requests report data
