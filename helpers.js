@@ -1,8 +1,9 @@
-exports.pathMatch = pathMatch;
+var parse = require('url').parse;
 
-function pathMatch(url, path) {
-  if (url == path) return true;
-  var q = url.indexOf('?');
-  if (q == -1) return false;
-  return url.substring(0, q) == path;
+exports.pathMatch = function(url, path) {
+  try {
+    return parse(url).pathname === path;
+  } catch (e) {
+    return false;
+  }
 }
