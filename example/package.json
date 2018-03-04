@@ -9,7 +9,7 @@
     "express": "^4.12.3",
     "morgan": "^1.5.2",
     "webpack": "^4.0.1",
-    "webpack-dev-middleware": "^2.0.6",
+    "webpack-dev-middleware": "^3.0.0",
     "webpack-hot-middleware": "./../"
   },
   "scripts": {
