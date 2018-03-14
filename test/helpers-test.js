@@ -19,4 +19,25 @@ describe("helpers", function() {
       assert.equal(pathMatch("/path-and", "/path"), false);
     });
   });
+
+  describe("createMemoizedToJson", function() {
+    var stats = function() {
+      return {
+        toJson: function() {
+          return {};
+        }
+      }
+    };
+    var toJson = null;
+    beforeEach(function() {
+      toJson = helpers.createMemoizedToJson();
+    });
+    it("should return same value for same stats instance", function() {
+      var instance = stats();
+      assert.strictEqual(toJson(instance), toJson(instance));
+    });
+    it("should return same value for same stats instance", function() {
+      assert.notStrictEqual(toJson(stats()), toJson(stats()));
+    });
+  });
 });

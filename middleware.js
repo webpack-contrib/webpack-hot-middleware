@@ -2,6 +2,7 @@ module.exports = webpackHotMiddleware;
 
 var helpers = require('./helpers');
 var pathMatch = helpers.pathMatch;
+var statsToJson = helpers.createMemoizedToJson();
 
 function webpackHotMiddleware(compiler, opts) {
   opts = opts || {};
@@ -84,7 +85,7 @@ function createEventStream(heartbeat) {
 
 function publishStats(action, statsResult, eventStream, log) {
   // For multi-compiler, stats will be an object with a 'children' array of stats
-  var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
+  var bundles = extractBundles(statsToJson(statsResult));
   bundles.forEach(function(stats) {
     if (log) {
       log("webpack built " + (stats.name ? stats.name + " " : "") +
