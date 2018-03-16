@@ -63,7 +63,10 @@ function setOverrides(overrides) {
 
   if (overrides.ansiColors) options.ansiColors = JSON.parse(overrides.ansiColors);
   if (overrides.overlayStyles) options.overlayStyles = JSON.parse(overrides.overlayStyles);
-  if (overrides.overlayWarnings) options.overlayWarnings = JSON.parse(overrides.overlayWarnings);
+
+  if (overrides.overlayWarnings) {
+    options.overlayWarnings = overrides.overlayWarnings == 'true';
+  }
 }
 
 function EventSourceWrapper() {
