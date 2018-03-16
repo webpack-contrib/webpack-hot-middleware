@@ -249,8 +249,10 @@ function processMessage(obj) {
       } else if (obj.warnings.length > 0) {
         if (reporter) reporter.problems('warnings', obj);
       } else {
-        reporter.cleanProblemsCache();
-        reporter.success();
+        if (reporter) {
+          reporter.cleanProblemsCache();
+          reporter.success();
+        }
         processUpdate(obj.hash, obj.modules, options);
       }
       break;
