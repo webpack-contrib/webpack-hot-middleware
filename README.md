@@ -164,7 +164,11 @@ Use the [hapi-webpack-plugin](https://www.npmjs.com/package/hapi-webpack-plugin)
 
 ### Koa
 
-Use [koa-webpack-middleware](https://www.npmjs.com/package/koa-webpack-middleware), which wraps this module and makes it work with koa.
+[koa-webpack-middleware](https://www.npmjs.com/package/koa-webpack-middleware)
+wraps this module for use with Koa 1.x
+
+[koa-webpack](https://www.npmjs.com/package/koa-webpack)
+can be used for Koa 2.x
 
 ## Troubleshooting
 
