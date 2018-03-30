@@ -15,9 +15,11 @@
   "main": "middleware.js",
   "scripts": {
     "test": "mocha",
-    "travis:test": "npm run cover",
-    "travis:lint": "npm run lint",
-    "travis": "istanbul cover _mocha --",
+    "security": "nsp check",
+    "ci:lint": "npm run lint && npm run security",
+    "ci:test": "npm run test",
+    "ci:coverage": "npm run test:coverage",
+    "test:coverage": "istanbul cover _mocha --",
     "lint": "eslint . --max-warnings 0"
   },
   "repository": {
@@ -33,11 +35,11 @@
     "strip-ansi": "^3.0.0"
   },
   "devDependencies": {
-    "codecov": "^3.0.0",
     "eslint": "^4.6.1",
     "express": "^4.13.3",
     "istanbul": "^0.4.2",
     "mocha": "^2.3.2",
+    "nsp": "^3.2.1",
     "sinon": "^1.12.2",
     "supertest": "^1.1.0"
   }
