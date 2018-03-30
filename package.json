@@ -15,6 +15,8 @@
   "main": "middleware.js",
   "scripts": {
     "test": "mocha",
+    "travis:test": "npm run cover",
+    "travis:lint": "npm run lint",
     "travis": "istanbul cover _mocha --",
     "lint": "eslint . --max-warnings 0"
   },
