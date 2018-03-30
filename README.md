@@ -197,6 +197,4 @@ entry: {
 
 ## License
 
-Copyright 2015 Glen Mailer.
-
-MIT Licensed.
+See [LICENSE file](LICENSE).
