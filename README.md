@@ -6,7 +6,7 @@ This module is **only** concerned with the mechanisms to connect a browser clien
 
 If you're using React then some common options are [react-transform-hmr](https://github.com/gaearon/react-transform-hmr/) and [react-hot-loader](https://github.com/gaearon/react-hot-loader).
 
-[![npm version](https://img.shields.io/npm/v/webpack-hot-middleware.svg)](https://www.npmjs.com/package/webpack-hot-middleware) [![Build Status](https://img.shields.io/travis/webpack-contrib/webpack-hot-middleware/master.svg)](https://travis-ci.org/webpack-contrib/webpack-hot-middleware)[![codecov](https://codecov.io/gh/webpack-contrib/webpack-hot-middleware/branch/master/graph/badge.svg)](https://codecov.io/gh/webpack-contrib/webpack-hot-middleware)![MIT Licensed](https://img.shields.io/npm/l/webpack-hot-middleware.svg)
+[![npm version](https://img.shields.io/npm/v/webpack-hot-middleware.svg)](https://www.npmjs.com/package/webpack-hot-middleware) [![CircleCI](https://circleci.com/gh/webpack-contrib/webpack-hot-middleware/tree/master.svg?style=svg)](https://circleci.com/gh/webpack-contrib/webpack-hot-middleware/tree/master)[![codecov](https://codecov.io/gh/webpack-contrib/webpack-hot-middleware/branch/master/graph/badge.svg)](https://codecov.io/gh/webpack-contrib/webpack-hot-middleware)![MIT Licensed](https://img.shields.io/npm/l/webpack-hot-middleware.svg)
 
 ## Installation & Usage
 
