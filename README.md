@@ -10,6 +10,8 @@ If you're using React then some common options are [react-transform-hmr](https:/
 
 ## Installation & Usage
 
+Don't merge me
+
 See [example/](./example/) for an example of usage.
 
 First, install the npm module.
