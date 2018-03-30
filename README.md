@@ -6,7 +6,7 @@ This module is **only** concerned with the mechanisms to connect a browser clien
 
 If you're using React then some common options are [react-transform-hmr](https://github.com/gaearon/react-transform-hmr/) and [react-hot-loader](https://github.com/gaearon/react-hot-loader).
 
-[![npm version](https://img.shields.io/npm/v/webpack-hot-middleware.svg)](https://www.npmjs.com/package/webpack-hot-middleware) [![Build Status](https://img.shields.io/travis/glenjamin/webpack-hot-middleware/master.svg)](https://travis-ci.org/glenjamin/webpack-hot-middleware) [![Coverage Status](https://coveralls.io/repos/glenjamin/webpack-hot-middleware/badge.svg?branch=master)](https://coveralls.io/r/glenjamin/webpack-hot-middleware?branch=master) ![MIT Licensed](https://img.shields.io/npm/l/webpack-hot-middleware.svg)
+[![npm version](https://img.shields.io/npm/v/webpack-hot-middleware.svg)](https://www.npmjs.com/package/webpack-hot-middleware) [![Build Status](https://img.shields.io/travis/webpack-contrib/webpack-hot-middleware/master.svg)](https://travis-ci.org/webpack-contrib/webpack-hot-middleware) [![Coverage Status](https://coveralls.io/repos/webpack-contrib/webpack-hot-middleware/badge.svg?branch=master)](https://coveralls.io/r/webpack-contrib/webpack-hot-middleware?branch=master) ![MIT Licensed](https://img.shields.io/npm/l/webpack-hot-middleware.svg)
 
 ## Installation & Usage
 
@@ -174,11 +174,11 @@ can be used for Koa 2.x
 
 ### Use on browsers without EventSource
 
-If you want to use this module with browsers that don't support eventsource, you'll need to use a [polyfill](https://libraries.io/search?platforms=NPM&q=eventsource+polyfill). See [issue #11](https://github.com/glenjamin/webpack-hot-middleware/issues/11)
+If you want to use this module with browsers that don't support eventsource, you'll need to use a [polyfill](https://libraries.io/search?platforms=NPM&q=eventsource+polyfill). See [issue #11](https://github.com/webpack-contrib/webpack-hot-middleware/issues/11)
 
 ### Not receiving updates in client when using Gzip
 
-This is because gzip generally buffers the response, but the Server Sent Events event-stream expects to be able to send data to the client immediately. You should make sure gzipping isn't being applied to the event-stream. See [issue #10](https://github.com/glenjamin/webpack-hot-middleware/issues/10).
+This is because gzip generally buffers the response, but the Server Sent Events event-stream expects to be able to send data to the client immediately. You should make sure gzipping isn't being applied to the event-stream. See [issue #10](https://github.com/webpack-contrib/webpack-hot-middleware/issues/10).
 
 ### Use with auto-restarting servers
 

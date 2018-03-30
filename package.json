@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/glenjamin/webpack-hot-middleware.git"
+    "url": "https://github.com/webpack-contrib/webpack-hot-middleware.git"
   },
   "author": "Glen Mailer <glen@stainlessed.co.uk>",
   "license": "MIT",
