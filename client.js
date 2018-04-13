@@ -205,9 +205,11 @@ function createReporter() {
       if (options.warn) {
         log(type, obj);
       }
-      if (overlay) {
+      if (overlay && (options.overlayWarnings || type !== 'warnings')) {
         overlay.showProblems(type, obj[type]);
+        return false;
       }
+      return true;
     },
     success: function() {
       if (overlay) overlay.clear();
@@ -244,15 +246,22 @@ function processMessage(obj) {
       if (obj.name && options.name && obj.name !== options.name) {
         return;
       }
+      var applyUpdate = true;
       if (obj.errors.length > 0) {
         if (reporter) reporter.problems('errors', obj);
-      } else if (obj.warnings.length > 0 && options.overlayWarnings) {
-        if (reporter) reporter.problems('warnings', obj);
+        applyUpdate = false;
+      } else if (obj.warnings.length > 0) {
+        if (reporter) {
+          var overlayShown = reporter.problems('warnings', obj);
+          applyUpdate = overlayShown;
+        }
       } else {
         if (reporter) {
           reporter.cleanProblemsCache();
           reporter.success();
         }
+      }
+      if (applyUpdate) {
         processUpdate(obj.hash, obj.modules, options);
       }
       break;

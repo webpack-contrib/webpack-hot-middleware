@@ -22,6 +22,10 @@ app.style.verticalAlign = 'middle';
 // require('unknown-module')
 // } syntax-error
 
+// Uncomment this next line to trigger a warning
+// require('Assert')
+require('assert');
+
 if (module.hot) {
   module.hot.accept();
   module.hot.dispose(function() {

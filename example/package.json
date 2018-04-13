@@ -10,7 +10,7 @@
     "morgan": "^1.5.2",
     "webpack": "^4.0.1",
     "webpack-dev-middleware": "^3.0.0",
-    "webpack-hot-middleware": "./../"
+    "webpack-hot-middleware": "file:.."
   },
   "scripts": {
     "start:multientry": "WEBPACK_CONFIG=./webpack.config.multientry.js node server.js"
