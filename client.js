@@ -205,7 +205,7 @@ function createReporter() {
       if (options.warn) {
         log(type, obj);
       }
-      if (overlay && (options.overlayWarnings || type !== 'warnings')) {
+      if (overlay) {
         overlay.showProblems(type, obj[type]);
       }
     },
@@ -246,7 +246,7 @@ function processMessage(obj) {
       }
       if (obj.errors.length > 0) {
         if (reporter) reporter.problems('errors', obj);
-      } else if (obj.warnings.length > 0) {
+      } else if (obj.warnings.length > 0 && options.overlayWarnings) {
         if (reporter) reporter.problems('warnings', obj);
       } else {
         if (reporter) {

@@ -6,7 +6,7 @@ describe("client", function() {
   var s, client, clientOverlay, processUpdate;
 
   beforeEach(function() {
-    s = sinon.sandbox.create();
+    s = sinon.sandbox.create({useFakeTimers: true});
   });
   afterEach(function() {
     s.restore();
@@ -15,6 +15,7 @@ describe("client", function() {
   context("with default options", function() {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
+      global.document = {};
       global.window = {
         EventSource: sinon.stub().returns({
           close: sinon.spy()
@@ -97,6 +98,60 @@ describe("client", function() {
       sinon.assert.calledWith(spy, { custom: 'thingy' });
       sinon.assert.notCalled(processUpdate);
     });
+    it("should not trigger webpack on errored builds", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: ["Something broke"],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.notCalled(processUpdate);
+    });
+    it("should show overlay on errored builds", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [
+          "Something broke",
+          "Actually, 2 things broke"
+        ],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.calledOnce(clientOverlay.showProblems)
+      sinon.assert.calledWith(clientOverlay.showProblems,
+        "errors", ["Something broke", "Actually, 2 things broke"]
+      );
+    });
+    it("should trigger webpack on warning builds", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: ["This isn't great, but it's not terrible"],
+        modules: []
+      }));
+      sinon.assert.calledOnce(processUpdate);
+    });
+    it("should not overlay on warning builds", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: ["This isn't great, but it's not terrible"],
+        modules: []
+      }));
+      sinon.assert.notCalled(clientOverlay.showProblems)
+    });
     it("should test more of the client's functionality");
   });
 
@@ -173,10 +228,11 @@ describe("client", function() {
   }
 
   beforeEach(function() {
-    clientOverlay = {
-      exports: { showProblems: sinon.stub(), clear: sinon.stub() }
+    clientOverlay = { showProblems: sinon.stub(), clear: sinon.stub() };
+    var clientOverlayModule = {
+      exports: function() { return clientOverlay; }
     };
-    require.cache[require.resolve('../client-overlay')] = clientOverlay;
+    require.cache[require.resolve('../client-overlay')] = clientOverlayModule;
 
     processUpdate = sinon.stub();
     require.cache[require.resolve('../process-update')] = {
