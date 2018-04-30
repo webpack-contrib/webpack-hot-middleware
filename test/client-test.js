@@ -12,7 +12,7 @@ describe("client", function() {
     s.restore();
   });
 
-  context("with default options", function() {
+  describe("with default options", function() {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
       global.document = {};
@@ -155,7 +155,7 @@ describe("client", function() {
     it("should test more of the client's functionality");
   });
 
-  context("with name options", function() {
+  describe("with name options", function() {
     beforeEach(function setup() {
       global.__resourceQuery = '?name=test'; // eslint-disable-line no-underscore-dangle
       global.window = {
@@ -193,7 +193,7 @@ describe("client", function() {
     });
   });
 
-  context("with no browser environment", function() {
+  describe("with no browser environment", function() {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
       delete global.window;
@@ -204,7 +204,7 @@ describe("client", function() {
     });
   });
 
-  context("with no EventSource", function() {
+  describe("with no EventSource", function() {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
       global.window = {};

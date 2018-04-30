@@ -15,6 +15,7 @@
   "main": "middleware.js",
   "scripts": {
     "test": "mocha",
+    "jest": "jest",
     "security": "nsp check",
     "ci:lint": "npm run lint && npm run security",
     "ci:test": "npm run test",
@@ -38,6 +39,7 @@
     "eslint": "^4.6.1",
     "express": "^4.13.3",
     "istanbul": "^0.4.2",
+    "jest": "^22.4.3",
     "mocha": "^2.3.2",
     "nsp": "^3.2.1",
     "sinon": "^1.12.2",

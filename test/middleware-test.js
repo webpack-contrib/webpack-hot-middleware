@@ -11,7 +11,7 @@ var webpackHotMiddleware = require('../middleware');
 describe("middleware", function() {
   var s, compiler, app, middleware;
 
-  context("with default options", function() {
+  describe("with default options", function() {
     beforeEach(setupServer({log: function(){}}));
 
     it("should create eventStream on /__webpack_hmr", function(done) {
