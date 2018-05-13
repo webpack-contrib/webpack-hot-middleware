@@ -128,6 +128,54 @@ describe("client", function() {
         "errors", ["Something broke", "Actually, 2 things broke"]
       );
     });
+    it("should hide overlay after errored build fixed", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [
+          "Something broke",
+          "Actually, 2 things broke"
+        ],
+        warnings: [],
+        modules: []
+      }));
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.calledOnce(clientOverlay.showProblems)
+      sinon.assert.calledOnce(clientOverlay.clear)
+    });
+    it("should hide overlay after errored build becomes warning", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [
+          "Something broke",
+          "Actually, 2 things broke"
+        ],
+        warnings: [],
+        modules: []
+      }));
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: ["This isn't great, but it's not terrible"],
+        modules: []
+      }));
+      sinon.assert.calledOnce(clientOverlay.showProblems)
+      sinon.assert.calledOnce(clientOverlay.clear)
+    });
     it("should trigger webpack on warning builds", function() {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(makeMessage({
@@ -152,7 +200,146 @@ describe("client", function() {
       }));
       sinon.assert.notCalled(clientOverlay.showProblems)
     });
+    it("should show overlay after warning build becomes error", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: ["This isn't great, but it's not terrible"],
+        modules: []
+      }));
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [
+          "Something broke",
+          "Actually, 2 things broke"
+        ],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.calledOnce(clientOverlay.showProblems)
+    });
     it("should test more of the client's functionality");
+  });
+
+  context("with overlayWarnings: true", function() {
+    beforeEach(function setup() {
+      global.__resourceQuery = '?overlayWarnings=true'; // eslint-disable-line no-underscore-dangle
+      global.document = {};
+      global.window = {
+        EventSource: sinon.stub().returns({
+          close: sinon.spy()
+        })
+      };
+    });
+    beforeEach(loadClient);
+    it("should show overlay on errored builds", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [
+          "Something broke",
+          "Actually, 2 things broke"
+        ],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.calledOnce(clientOverlay.showProblems)
+      sinon.assert.calledWith(clientOverlay.showProblems,
+        "errors", ["Something broke", "Actually, 2 things broke"]
+      );
+    });
+    it("should hide overlay after errored build fixed", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [
+          "Something broke",
+          "Actually, 2 things broke"
+        ],
+        warnings: [],
+        modules: []
+      }));
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.calledOnce(clientOverlay.showProblems)
+      sinon.assert.calledOnce(clientOverlay.clear)
+    });
+    it("should show overlay on warning builds", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: ["This isn't great, but it's not terrible"],
+        modules: []
+      }));
+      sinon.assert.calledOnce(clientOverlay.showProblems)
+      sinon.assert.calledWith(clientOverlay.showProblems,
+        "warnings", ["This isn't great, but it's not terrible"]
+      )
+    });
+    it("should hide overlay after warning build fixed", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: ["This isn't great, but it's not terrible"],
+        modules: []
+      }));
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: [],
+        modules: []
+      }));
+      sinon.assert.calledOnce(clientOverlay.showProblems)
+      sinon.assert.calledOnce(clientOverlay.clear)
+    });
+    it("should update overlay after errored build becomes warning", function() {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [
+          "Something broke",
+          "Actually, 2 things broke"
+        ],
+        warnings: [],
+        modules: []
+      }));
+      eventSource.onmessage(makeMessage({
+        action: 'built',
+        time: 100,
+        hash: 'deadbeeffeddad',
+        errors: [],
+        warnings: ["This isn't great, but it's not terrible"],
+        modules: []
+      }));
+      sinon.assert.calledTwice(clientOverlay.showProblems)
+      sinon.assert.calledWith(clientOverlay.showProblems, "errors")
+      sinon.assert.calledWith(clientOverlay.showProblems, "warnings")
+    });
   });
 
   context("with name options", function() {
