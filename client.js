@@ -205,10 +205,16 @@ function createReporter() {
       if (options.warn) {
         log(type, obj);
       }
-      if (overlay && (options.overlayWarnings || type !== 'warnings')) {
+      if (
+        overlay &&
+        (
+          (options.overlayWarnings && type === 'warnings') || type === 'errors'
+        )
+      ) {
         overlay.showProblems(type, obj[type]);
         return false;
       }
+      if (overlay) overlay.clear();
       return true;
     },
     success: function() {
