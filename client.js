@@ -205,9 +205,12 @@ function createReporter() {
       if (options.warn) {
         log(type, obj);
       }
-      if (overlay && (options.overlayWarnings || type !== 'warnings')) {
-        overlay.showProblems(type, obj[type]);
-        return false;
+      if (overlay) {
+        if (options.overlayWarnings || type === 'errors') {
+          overlay.showProblems(type, obj[type]);
+          return false;
+        }
+        overlay.clear();
       }
       return true;
     },
