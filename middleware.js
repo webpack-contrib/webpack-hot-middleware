@@ -57,16 +57,24 @@ function createEventStream(heartbeat) {
   }, heartbeat).unref();
   return {
     handler: function(req, res) {
-      req.socket.setKeepAlive(true);
-      res.writeHead(200, {
+      var headers = {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'text/event-stream;charset=utf-8',
         'Cache-Control': 'no-cache, no-transform',
-        'Connection': 'keep-alive',
         // While behind nginx, event stream should not be buffered:
         // http://nginx.org/docs/http/ngx_http_proxy_module.html#proxy_buffering
         'X-Accel-Buffering': 'no'
-      });
+      };
+
+      var isHttp1 = !(parseInt(req.httpVersion) >= 2);
+      if (isHttp1) {
+        req.socket.setKeepAlive(true);
+        Object.assign(headers, {
+          'Connection': 'keep-alive',
+        });
+      }
+
+      res.writeHead(200, headers);
       res.write('\n');
       var id = clientId++;
       clients[id] = res;
