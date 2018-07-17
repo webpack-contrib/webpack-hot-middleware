@@ -184,8 +184,8 @@ describe("middleware", function() {
         });
     });
     // Express HTTP/2 support is in progress: https://github.com/expressjs/express/pull/3390
-    it("should not contain `conntection: keep-alive` header for HTTP/2 request");
-    it("should contain `conntection: keep-alive` header for HTTP/1 request", function(done) {
+    it("should not contain `connection: keep-alive` header for HTTP/2 request");
+    it("should contain `connection: keep-alive` header for HTTP/1 request", function(done) {
       request('/__webpack_hmr')
         .end(function(err, res) {
           if (err) return done(err);			
