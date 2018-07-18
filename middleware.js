@@ -10,7 +10,8 @@ function webpackHotMiddleware(compiler, opts) {
   opts.heartbeat = opts.heartbeat || 10 * 1000;
 
   var eventStream = createEventStream(opts.heartbeat);
-  var latestStats = null;
+  var latestBundles = null;
+  var isValid = false;
 
   if (compiler.hooks) {
     compiler.hooks.invalid.tap("webpack-hot-middleware", onInvalid);
@@ -20,22 +21,24 @@ function webpackHotMiddleware(compiler, opts) {
     compiler.plugin("done", onDone);
   }
   function onInvalid() {
-    latestStats = null;
+    isValid = false;
     if (opts.log) opts.log("webpack building...");
     eventStream.publish({action: "building"});
   }
   function onDone(statsResult) {
     // Keep hold of latest stats so they can be propagated to new clients
-    latestStats = statsResult;
-    publishStats("built", latestStats, eventStream, opts.log);
+    var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
+    isValid = true;
+    publishStats(latestBundles, bundles, eventStream, opts.log);
+    latestBundles = bundles;
   }
   var middleware = function(req, res, next) {
     if (!pathMatch(req.url, opts.path)) return next();
     eventStream.handler(req, res);
-    if (latestStats) {
+    if (latestBundles && isValid) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
-      publishStats("sync", latestStats, eventStream);
+      publishStats(latestBundles, latestBundles, eventStream);
     }
   };
   middleware.publish = eventStream.publish;
@@ -90,14 +93,14 @@ function createEventStream(heartbeat) {
   };
 }
 
-function publishStats(action, statsResult, eventStream, log) {
+function publishStats(latestBundles, bundles, eventStream, log) {
   // For multi-compiler, stats will be an object with a 'children' array of stats
-  var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
-  bundles.forEach(function(stats) {
+  bundles.forEach(function(stats, idx) {
     if (log) {
       log("webpack built " + (stats.name ? stats.name + " " : "") +
         stats.hash + " in " + stats.time + "ms");
     }
+    var action = (!latestBundles || latestBundles[idx].hash === stats.hash) ? "sync" : "built";
     eventStream.publish({
       name: stats.name,
       action: action,
