@@ -78,7 +78,7 @@ function createEventStream(heartbeat) {
       res.write('\n');
       var id = clientId++;
       clients[id] = res;
-      req.on("close", function(){
+      req.on("close", function() {
         delete clients[id];
       });
     },
