@@ -89,7 +89,7 @@ describe("middleware", function() {
         .end(function(err, res) {
           if (err) return done(err);
 
-          res.on('data', verify);
+          res.once('data', verify);
 
           compiler.emit("done", stats({
             children: [
