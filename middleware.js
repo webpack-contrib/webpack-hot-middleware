@@ -91,15 +91,29 @@ function createEventStream(heartbeat) {
 }
 
 function publishStats(action, statsResult, eventStream, log) {
+  var stats = statsResult.toJson({
+    all: false,
+    children: true,
+    modules: true,
+    timings: true,
+    hash: true
+  });
   // For multi-compiler, stats will be an object with a 'children' array of stats
-  var bundles = extractBundles(statsResult.toJson({ errorDetails: false }));
+  var bundles = extractBundles(stats);
   bundles.forEach(function(stats) {
+    var name = stats.name || "";
+
+    // Fallback to compilation name in case of 1 bundle
+    if (bundles.length === 1 && !name) {
+      name = statsResult.compilation.name || "";
+    }
+
     if (log) {
-      log("webpack built " + (stats.name ? stats.name + " " : "") +
+      log("webpack built " + (name ? name + " " : "") +
         stats.hash + " in " + stats.time + "ms");
     }
     eventStream.publish({
-      name: stats.name,
+      name: name,
       action: action,
       time: stats.time,
       hash: stats.hash,

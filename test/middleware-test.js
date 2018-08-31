@@ -136,6 +136,24 @@ describe("middleware", function() {
           done();
         });
     });
+    it("should fallback to the compilation name if no stats name is provided and there is one stats object", function(done) {
+      compiler.emit("done", stats({
+        time: 100,
+        hash: "deadbeeffeddad",
+        warnings: false,
+        errors: false,
+        modules: []
+      }));
+
+      request('/__webpack_hmr')
+        .end(function(err, res) {
+          if (err) return done(err);
+
+          var event = JSON.parse(res.events[0].substring(5));
+          assert.equal(event.name, "compilation");
+          done();
+        });
+    });
     it("should have tests on the payload of bundle complete");
     it("should notify all clients", function(done) {
       request('/__webpack_hmr')
@@ -188,7 +206,7 @@ describe("middleware", function() {
     it("should contain `connection: keep-alive` header for HTTP/1 request", function(done) {
       request('/__webpack_hmr')
         .end(function(err, res) {
-          if (err) return done(err);			
+          if (err) return done(err);
           assert.equal(res.headers['connection'], 'keep-alive');
           done();
         });
@@ -242,6 +260,9 @@ describe("middleware", function() {
   }
   function stats(data) {
     return {
+      compilation: {
+        name: 'compilation'
+      },
       toJson: function() {
         return data;
       }
