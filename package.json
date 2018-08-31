@@ -15,7 +15,7 @@
   "main": "middleware.js",
   "scripts": {
     "test": "mocha",
-    "security": "nsp check",
+    "security": "npm audit",
     "ci:lint": "npm run lint && npm run security",
     "ci:test": "npm run test",
     "ci:coverage": "npm run test:coverage",
@@ -39,7 +39,6 @@
     "express": "^4.13.3",
     "istanbul": "^0.4.2",
     "mocha": "^5.2.0",
-    "nsp": "^3.2.1",
     "sinon": "^1.12.2",
     "supertest": "^3.1.0"
   }

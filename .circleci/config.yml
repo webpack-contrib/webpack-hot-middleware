@@ -78,6 +78,9 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package-lock.json" }}
       - run:
+          name: Install Latest NPM.
+          command: npm i -g npm@latest
+      - run:
           name: NPM Rebuild
           command: npm install
       - run:
