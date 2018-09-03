@@ -103,8 +103,8 @@ function publishStats(action, statsResult, eventStream, log) {
   bundles.forEach(function(stats) {
     var name = stats.name || "";
 
-    // Fallback to compilation name in case of 1 bundle
-    if (bundles.length === 1 && !name) {
+    // Fallback to compilation name in case of 1 bundle (if it exists)
+    if (bundles.length === 1 && !name && statsResult.compilation) {
       name = statsResult.compilation.name || "";
     }
 
