@@ -11,6 +11,7 @@ function webpackHotMiddleware(compiler, opts) {
 
   var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
+  var closed = false;
 
   if (compiler.hooks) {
     compiler.hooks.invalid.tap("webpack-hot-middleware", onInvalid);
@@ -20,16 +21,19 @@ function webpackHotMiddleware(compiler, opts) {
     compiler.plugin("done", onDone);
   }
   function onInvalid() {
+    if (closed) return;
     latestStats = null;
     if (opts.log) opts.log("webpack building...");
     eventStream.publish({action: "building"});
   }
   function onDone(statsResult) {
+    if (closed) return;
     // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
     publishStats("built", latestStats, eventStream, opts.log);
   }
   var middleware = function(req, res, next) {
+    if (closed) return next();
     if (!pathMatch(req.url, opts.path)) return next();
     eventStream.handler(req, res);
     if (latestStats) {
@@ -38,7 +42,18 @@ function webpackHotMiddleware(compiler, opts) {
       publishStats("sync", latestStats, eventStream);
     }
   };
-  middleware.publish = eventStream.publish;
+  middleware.publish = function(payload) {
+    if (closed) return;
+    eventStream.publish(payload);
+  };
+  middleware.close = function() {
+    if (closed) return;
+    // Can't remove compiler plugins, so we just set a flag and noop if closed
+    // https://github.com/webpack/tapable/issues/32#issuecomment-350644466
+    closed = true;
+    eventStream.close();
+    eventStream = null;
+  };
   return middleware;
 }
 
@@ -50,12 +65,19 @@ function createEventStream(heartbeat) {
       fn(clients[id]);
     });
   }
-  setInterval(function heartbeatTick() {
+  var interval = setInterval(function heartbeatTick() {
     everyClient(function(client) {
       client.write("data: \uD83D\uDC93\n\n");
     });
   }, heartbeat).unref();
   return {
+    close: function() {
+      clearInterval(interval);
+      everyClient(function(client) {
+        if (!client.finished) client.end();
+      });
+      clients = {};
+    },
     handler: function(req, res) {
       var headers = {
         'Access-Control-Allow-Origin': '*',
@@ -79,6 +101,7 @@ function createEventStream(heartbeat) {
       var id = clientId++;
       clients[id] = res;
       req.on("close", function(){
+        if (!res.finished) res.end();
         delete clients[id];
       });
     },

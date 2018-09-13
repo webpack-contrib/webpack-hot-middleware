@@ -211,6 +211,34 @@ describe("middleware", function() {
           done();
         });
     });
+
+    it("should end event stream clients and disable compiler hooks on close", function(done) {
+      request('/__webpack_hmr')
+        .end(function(err, res) {
+          if (err) return done(err);
+
+          var called = 0;
+          res.on('data', function() {
+            called++;
+          });
+
+          res.on('end', function() {
+            middleware({}, {} , function(err) {
+              assert(!err);
+              assert.equal(called, 3);
+              done();
+            });
+          });
+
+          middleware.publish({ obj: 'with stuff' });
+          compiler.emit("invalid");
+          compiler.emit("done", stats({modules: []}));
+          middleware.close();
+          middleware.publish({ obj: 'with stuff' });
+          compiler.emit("invalid");
+          compiler.emit("done", stats({modules: []}));
+        });
+    });
   });
 
   beforeEach(function() {
