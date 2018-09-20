@@ -100,7 +100,7 @@ module.exports = function(hash, moduleMap, options) {
           "See " + hmrDocsUrl + " for more details."
         );
         unacceptedModules.forEach(function(moduleId) {
-          console.warn("[HMR]  - " + moduleMap[moduleId]);
+          console.warn("[HMR]  - " + moduleMap[moduleId] || moduleId);
         });
       }
       performReload();
@@ -113,7 +113,7 @@ module.exports = function(hash, moduleMap, options) {
       } else {
         console.log("[HMR] Updated modules:");
         renewedModules.forEach(function(moduleId) {
-          console.log("[HMR]  - " + moduleMap[moduleId]);
+          console.log("[HMR]  - " + moduleMap[moduleId] || moduleId);
         });
       }
 
