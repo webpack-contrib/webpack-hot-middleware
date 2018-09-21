@@ -100,7 +100,7 @@ module.exports = function(hash, moduleMap, options) {
           "See " + hmrDocsUrl + " for more details."
         );
         unacceptedModules.forEach(function(moduleId) {
-          console.warn("[HMR]  - " + moduleMap[moduleId] || moduleId);
+          console.warn("[HMR]  - " + (moduleMap[moduleId] || moduleId));
         });
       }
       performReload();
@@ -113,7 +113,7 @@ module.exports = function(hash, moduleMap, options) {
       } else {
         console.log("[HMR] Updated modules:");
         renewedModules.forEach(function(moduleId) {
-          console.log("[HMR]  - " + moduleMap[moduleId] || moduleId);
+          console.log("[HMR]  - " + (moduleMap[moduleId] || moduleId));
         });
       }
 
@@ -127,13 +127,13 @@ module.exports = function(hash, moduleMap, options) {
     if (module.hot.status() in failureStatuses) {
       if (options.warn) {
         console.warn("[HMR] Cannot check for update (Full reload needed)");
-        console.warn("[HMR] " + err.stack || err.message);
+        console.warn("[HMR] " + (err.stack || err.message));
       }
       performReload();
       return;
     }
     if (options.warn) {
-      console.warn("[HMR] Update check failed: " + err.stack || err.message);
+      console.warn("[HMR] Update check failed: " + (err.stack || err.message));
     }
   }
 
