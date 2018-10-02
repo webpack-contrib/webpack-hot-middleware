@@ -115,7 +115,6 @@ function createEventStream(heartbeat) {
 
 function publishStats(action, statsResult, eventStream, log) {
   var stats = statsResult.toJson({
-    all: false,
     children: true,
     modules: true,
     timings: true,
