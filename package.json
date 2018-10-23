@@ -40,6 +40,8 @@
     "istanbul": "^0.4.2",
     "mocha": "^5.2.0",
     "sinon": "^1.12.2",
-    "supertest": "^3.1.0"
+    "supertest": "^3.1.0",
+    "webpack": "^4.20.2",
+    "webpack-dev-middleware": "^3.4.0"
   }
 }
