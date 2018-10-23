@@ -1,4 +1,6 @@
 /* eslint-env mocha */
+var path = require("path");
+
 var express = require("express");
 var webpack = require("webpack");
 var webpackDevMiddleware = require("webpack-dev-middleware");
@@ -11,9 +13,10 @@ var webpackHotMiddleware = require('../middleware');
 var app, compiler;
 
 describe("realistic single compiler", function() {
+  var clientCode = path.resolve(__dirname, "./fixtures/single/client.js");
   before(function() {
     require('fs').writeFileSync(
-      require.resolve("./fixtures/single/client.js"),
+      clientCode,
       "var a = " + Math.random() + ";\n"
     );
 
@@ -76,7 +79,7 @@ describe("realistic single compiler", function() {
           res = _res;
 
           require('fs').writeFile(
-            require.resolve("./fixtures/single/client.js"),
+            clientCode,
             "var a = " + Math.random() + ";\n",
             done
           );
