@@ -14,7 +14,7 @@ var hmrDocsUrl = "https://webpack.js.org/concepts/hot-module-replacement/"; // e
 
 var lastHash;
 var failureStatuses = { abort: 1, fail: 1 };
-var applyOptions = { 				
+var applyOptions = {
   ignoreUnaccepted: true,
   ignoreDeclined: true,
   ignoreErrored: true,
@@ -27,7 +27,7 @@ var applyOptions = {
   onErrored: function(data) {
     console.error(data.error);
     console.warn("Ignored an error while updating module " + data.moduleId + " (" + data.type + ")");
-  } 
+  }
 }
 
 function upToDate(hash) {
