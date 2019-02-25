@@ -76,7 +76,7 @@ function createEventStream(heartbeat) {
       everyClient(function(client) {
         if (!client.finished) {
           client.end && client.end()
-        };
+        }
       });
       clients = {};
     },
