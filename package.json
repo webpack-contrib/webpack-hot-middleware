@@ -35,7 +35,7 @@
     "strip-ansi": "^3.0.0"
   },
   "devDependencies": {
-    "eslint": "^4.6.1",
+    "eslint": "^5.14.1",
     "express": "^4.13.3",
     "istanbul": "^0.4.2",
     "mocha": "^5.2.0",
