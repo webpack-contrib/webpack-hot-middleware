@@ -35,7 +35,7 @@
     "strip-ansi": "^3.0.0"
   },
   "devDependencies": {
-    "eslint": "^4.6.1",
+    "eslint": "^5.14.1",
     "eslint-plugin-prettier": "^3.0.1",
     "express": "^4.13.3",
     "istanbul": "^0.4.2",
