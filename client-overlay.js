@@ -18,7 +18,7 @@ var styles = {
   bottom: 0,
   overflow: 'auto',
   dir: 'ltr',
-  textAlign: 'left'
+  textAlign: 'left',
 };
 
 var ansiHTML = require('ansi-html');
@@ -32,7 +32,7 @@ var colors = {
   magenta: '7FACCA',
   cyan: 'C3C2EF',
   lightgrey: 'EBE7E3',
-  darkgrey: '6D7891'
+  darkgrey: '6D7891',
 };
 
 var Entities = require('html-entities').AllHtmlEntities;
@@ -58,15 +58,17 @@ function clear() {
   }
 }
 
-function problemType (type) {
+function problemType(type) {
   var problemColors = {
     errors: colors.red,
-    warnings: colors.yellow
+    warnings: colors.yellow,
   };
   var color = problemColors[type] || colors.red;
   return (
-    '<span style="background-color:#' + color + '; color:#fff; padding:2px 4px; border-radius: 2px">' +
-      type.slice(0, -1).toUpperCase() +
+    '<span style="background-color:#' +
+    color +
+    '; color:#fff; padding:2px 4px; border-radius: 2px">' +
+    type.slice(0, -1).toUpperCase() +
     '</span>'
   );
 }
@@ -89,8 +91,8 @@ module.exports = function(options) {
 
   return {
     showProblems: showProblems,
-    clear: clear
-  }
+    clear: clear,
+  };
 };
 
 module.exports.clear = clear;

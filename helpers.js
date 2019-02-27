@@ -6,4 +6,4 @@ exports.pathMatch = function(url, path) {
   } catch (e) {
     return false;
   }
-}
+};
