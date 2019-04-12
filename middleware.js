@@ -87,6 +87,7 @@ function createEventStream(heartbeat) {
         // While behind nginx, event stream should not be buffered:
         // http://nginx.org/docs/http/ngx_http_proxy_module.html#proxy_buffering
         'X-Accel-Buffering': 'no',
+        'Content-Length': '-1'
       };
 
       var isHttp1 = !(parseInt(req.httpVersion) >= 2);
