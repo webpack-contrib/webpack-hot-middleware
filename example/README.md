@@ -1,6 +1,9 @@
 # Webpack Hot Middleware Example
 
 * Install deps
+
+**NOTE**:
+> You shoude execute `npm install` command in parent folder first. Then run this command once again in `examples/` folder.
 ```sh
 npm install
 ```
