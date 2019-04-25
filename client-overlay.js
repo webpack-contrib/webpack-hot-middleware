@@ -74,9 +74,9 @@ function problemType(type) {
 }
 
 module.exports = function(options) {
-  for (var color in options.overlayColors) {
+  for (var color in options.ansiColors) {
     if (color in colors) {
-      colors[color] = options.overlayColors[color];
+      colors[color] = options.ansiColors[color];
     }
     ansiHTML.setColors(colors);
   }
