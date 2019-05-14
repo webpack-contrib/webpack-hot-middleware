@@ -4,8 +4,8 @@ var clientOverlay = document.createElement('div');
 clientOverlay.id = 'webpack-hot-middleware-clientOverlay';
 var styles = {
   background: 'rgba(0,0,0,0.85)',
-  color: '#E8E8E8',
-  lineHeight: '1.2',
+  color: '#e8e8e8',
+  lineHeight: '1.6',
   whiteSpace: 'pre',
   fontFamily: 'Menlo, Consolas, monospace',
   fontSize: '13px',
@@ -25,14 +25,14 @@ var ansiHTML = require('ansi-html');
 var colors = {
   reset: ['transparent', 'transparent'],
   black: '181818',
-  red: 'E36049',
-  green: 'B3CB74',
-  yellow: 'FFD080',
-  blue: '7CAFC2',
-  magenta: '7FACCA',
-  cyan: 'C3C2EF',
-  lightgrey: 'EBE7E3',
-  darkgrey: '6D7891',
+  red: 'ff3348',
+  green: '3fff4f',
+  yellow: 'ffd30e',
+  blue: '169be0',
+  magenta: 'f840b7',
+  cyan: '0ad8e9',
+  lightgrey: 'ebe7e3',
+  darkgrey: '6d7891',
 };
 
 var Entities = require('html-entities').AllHtmlEntities;
@@ -67,7 +67,7 @@ function problemType(type) {
   return (
     '<span style="background-color:#' +
     color +
-    '; color:#fff; padding:2px 4px; border-radius: 2px">' +
+    '; color:#000000; padding:3px 6px; border-radius: 4px;">' +
     type.slice(0, -1).toUpperCase() +
     '</span>'
   );
