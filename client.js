@@ -191,8 +191,8 @@ function createReporter() {
     var title = '[HMR] bundle ' + name + 'has ' + obj[type].length + ' ' + type;
     // NOTE: console.warn or console.error will print the stack trace
     // which isn't helpful here, so using console.log to escape it.
-    if (console.group && console.groupEnd) {
-      console.group('%c' + title, style);
+    if (console.groupCollapsed && console.groupEnd) {
+      console.groupCollapsed('%c' + title, style);
       console.log('%c' + newProblems, style);
       console.groupEnd();
     } else {
