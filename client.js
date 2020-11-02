@@ -176,8 +176,10 @@ function createReporter() {
   var previousProblems = null;
   function log(type, obj) {
     var newProblems = obj[type]
-      .map(function(msg) {
-        return strip(msg);
+      .map(function(problem) {
+        var isNested = typeof problem === 'object';
+        var message = isNested ? problem.message : problem;
+        return strip(message);
       })
       .join('\n');
     if (previousProblems == newProblems) {

@@ -122,6 +122,7 @@ function publishStats(action, statsResult, eventStream, log) {
     modules: true,
     timings: true,
     hash: true,
+    errors: true,
   });
   // For multi-compiler, stats will be an object with a 'children' array of stats
   var bundles = extractBundles(stats);

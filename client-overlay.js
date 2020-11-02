@@ -40,7 +40,10 @@ var entities = new Entities();
 
 function showProblems(type, lines) {
   clientOverlay.innerHTML = '';
-  lines.forEach(function(msg) {
+  lines.forEach(function(line) {
+    var isNested = typeof line === 'object';
+    var msg = isNested ? line.moduleName + '\n\n' + line.message : line;
+
     msg = ansiHTML(entities.encode(msg));
     var div = document.createElement('div');
     div.style.marginBottom = '26px';
