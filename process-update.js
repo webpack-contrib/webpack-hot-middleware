@@ -14,31 +14,6 @@ var hmrDocsUrl = 'https://webpack.js.org/concepts/hot-module-replacement/'; // e
 
 var lastHash;
 var failureStatuses = { abort: 1, fail: 1 };
-var applyOptions = {
-  ignoreUnaccepted: true,
-  ignoreDeclined: true,
-  ignoreErrored: true,
-  onUnaccepted: function(data) {
-    console.warn(
-      'Ignored an update to unaccepted module ' + data.chain.join(' -> ')
-    );
-  },
-  onDeclined: function(data) {
-    console.warn(
-      'Ignored an update to declined module ' + data.chain.join(' -> ')
-    );
-  },
-  onErrored: function(data) {
-    console.error(data.error);
-    console.warn(
-      'Ignored an error while updating module ' +
-        data.moduleId +
-        ' (' +
-        data.type +
-        ')'
-    );
-  },
-};
 
 function upToDate(hash) {
   if (hash) lastHash = hash;
@@ -65,12 +40,44 @@ module.exports = function(hash, moduleMap, options) {
         return null;
       }
 
+      var failedUpdate = false;
       var applyCallback = function(applyErr, renewedModules) {
         if (applyErr) return handleError(applyErr);
 
         if (!upToDate()) check();
 
         logUpdates(updatedModules, renewedModules);
+        if (failedUpdate) {
+          performReload();
+        }
+      };
+      var applyOptions = {
+        ignoreUnaccepted: true,
+        ignoreDeclined: true,
+        ignoreErrored: true,
+        onUnaccepted: function(data) {
+          console.warn(
+            'Ignored an update to unaccepted module ' + data.chain.join(' -> ')
+          );
+          failedUpdate = true;
+        },
+        onDeclined: function(data) {
+          console.warn(
+            'Ignored an update to declined module ' + data.chain.join(' -> ')
+          );
+          failedUpdate = true;
+        },
+        onErrored: function(data) {
+          console.error(data.error);
+          console.warn(
+            'Ignored an error while updating module ' +
+              data.moduleId +
+              ' (' +
+              data.type +
+              ')'
+          );
+          failedUpdate = true;
+        },
       };
 
       var applyResult = module.hot.apply(applyOptions, applyCallback);
