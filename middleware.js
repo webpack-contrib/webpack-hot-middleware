@@ -122,6 +122,7 @@ function publishStats(action, statsResult, eventStream, log) {
     modules: true,
     timings: true,
     hash: true,
+    errors: true,
   });
   // For multi-compiler, stats will be an object with a 'children' array of stats
   var bundles = extractBundles(stats);
@@ -148,10 +149,21 @@ function publishStats(action, statsResult, eventStream, log) {
       action: action,
       time: stats.time,
       hash: stats.hash,
-      warnings: stats.warnings || [],
-      errors: stats.errors || [],
+      warnings: formatErrors(stats.warnings),
+      errors: formatErrors(stats.errors),
       modules: buildModuleMap(stats.modules),
     });
+  });
+}
+
+function formatErrors(errors) {
+  if (!errors || !errors.length) return [];
+
+  if (typeof errors[0] === 'string') return errors;
+
+  // Convert webpack@5 error info into a backwards-compatible flat string
+  return errors.map(function (error) {
+    return error.moduleName + ' ' + error.loc + '\n' + error.message;
   });
 }
 

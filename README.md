@@ -23,11 +23,7 @@ Next, enable hot reloading in your webpack config:
  1. Add the following plugins to the `plugins` array:
     ```js
     plugins: [
-        // OccurrenceOrderPlugin is needed for webpack 1.x only
-        new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
-        // Use NoErrorsPlugin for webpack 1.x
-        new webpack.NoEmitOnErrorsPlugin()
     ]
     ```
 
@@ -46,9 +42,7 @@ Now add the middleware into your server:
     var webpackConfig = require('./webpack.config');
     var compiler = webpack(webpackConfig);
 
-    app.use(require("webpack-dev-middleware")(compiler, {
-        noInfo: true, publicPath: webpackConfig.output.publicPath
-    }));
+    app.use(require("webpack-dev-middleware")(compiler));
     ```
 
  2. Add `webpack-hot-middleware` attached to the same compiler instance

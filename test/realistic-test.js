@@ -5,7 +5,8 @@ var express = require('express');
 var webpack = require('webpack');
 var webpackDevMiddleware = require('webpack-dev-middleware');
 
-var assert = require('assert');
+var assert = require('assert').strict;
+var util = require('util');
 var supertest = require('supertest');
 
 var webpackHotMiddleware = require('../middleware');
@@ -27,12 +28,7 @@ describe('realistic single compiler', function () {
     });
 
     app = express();
-    app.use(
-      webpackDevMiddleware(compiler, {
-        publicPath: '/',
-        logLevel: 'silent',
-      })
-    );
+    app.use(webpackDevMiddleware(compiler, { stats: false, publicPath: '/' }));
     app.use(
       webpackHotMiddleware(compiler, {
         log: function () {},
@@ -59,14 +55,15 @@ describe('realistic single compiler', function () {
           assert.equal(event.name, '');
           assert.ok(event.hash);
           assert.ok(event.time);
-          assert.ok(Array.isArray(event.warnings));
-          assert.ok(Array.isArray(event.errors));
+          assertStringArray(event.warnings);
+          assertStringArray(event.errors);
           assert.ok(typeof event.modules === 'object');
 
           done();
         });
     });
   });
+
   describe('after file change', function () {
     var res;
     before(function (done) {
@@ -110,9 +107,55 @@ describe('realistic single compiler', function () {
           assert.equal(event.name, '');
           assert.ok(event.hash);
           assert.ok(event.time);
-          assert.ok(Array.isArray(event.warnings));
-          assert.ok(Array.isArray(event.errors));
+          assertStringArray(event.warnings);
+          assertStringArray(event.errors);
           assert.ok(typeof event.modules === 'object');
+
+          done();
+        }
+      );
+    });
+  });
+
+  describe('after syntax error', function () {
+    var res;
+    before(function (done) {
+      request('/__webpack_hmr')
+        .expect('Content-Type', /^text\/event-stream\b/)
+        .end(function (err, _res) {
+          if (err) return done(err);
+
+          res = _res;
+
+          require('fs').writeFile(clientCode, 'var a = ;\n', done);
+        });
+    });
+    it('should publish building event', function (done) {
+      waitUntil(
+        function () {
+          return res.events.length >= 2;
+        },
+        function () {
+          var event = JSON.parse(res.events[1].substring(5));
+
+          assert.equal(event.action, 'building');
+
+          done();
+        }
+      );
+    });
+    it('should publish built event with error', function (done) {
+      waitUntil(
+        function () {
+          return res.events.length >= 3;
+        },
+        function () {
+          var event = JSON.parse(res.events[2].substring(5));
+
+          assert.equal(event.action, 'built');
+          assert.equal(event.name, '');
+          assertStringArray(event.errors);
+          assert.equal(event.errors.length, 1);
 
           done();
         }
@@ -155,4 +198,14 @@ function waitUntil(condition, body) {
       waitUntil(condition, body);
     }, 50);
   }
+}
+
+function assertStringArray(arr) {
+  assert.ok(
+    Array.isArray(arr) &&
+      arr.every(function (s) {
+        return typeof s === 'string';
+      }),
+    util.format('expected %j to be an array of strings', arr)
+  );
 }
