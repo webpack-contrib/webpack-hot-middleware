@@ -35,13 +35,12 @@ var colors = {
   darkgrey: '6d7891',
 };
 
-var Entities = require('html-entities').AllHtmlEntities;
-var entities = new Entities();
+var {encode: htmlEncode} = require('html-entities');
 
 function showProblems(type, lines) {
   clientOverlay.innerHTML = '';
   lines.forEach(function (msg) {
-    msg = ansiHTML(entities.encode(msg));
+    msg = ansiHTML(htmlEncode(msg));
     var div = document.createElement('div');
     div.style.marginBottom = '26px';
     div.innerHTML = problemType(type) + ' in ' + msg;
