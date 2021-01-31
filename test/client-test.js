@@ -6,7 +6,7 @@ describe('client', function() {
   var s, client, clientOverlay, processUpdate;
 
   beforeEach(function() {
-    s = sinon.sandbox.create({ useFakeTimers: true });
+    s = sinon.createSandbox({ useFakeTimers: true });
   });
   afterEach(function() {
     s.restore();

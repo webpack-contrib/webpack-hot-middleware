@@ -243,7 +243,7 @@ describe('middleware', function() {
   });
 
   beforeEach(function() {
-    s = sinon.sandbox.create();
+    s = sinon.createSandbox();
     s.useFakeTimers();
     compiler = new events.EventEmitter();
     compiler.plugin = compiler.on;
