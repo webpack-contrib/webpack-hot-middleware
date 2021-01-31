@@ -15,10 +15,7 @@
   "main": "middleware.js",
   "scripts": {
     "test": "mocha",
-    "security": "npm audit",
-    "ci:lint": "npm run lint && npm run security",
-    "ci:test": "npm run test",
-    "ci:coverage": "nyc npm run test",
+    "coverage": "nyc npm run test",
     "lint": "eslint . --max-warnings 0",
     "prettier": "prettier --write ."
   },
