@@ -5,7 +5,7 @@ var time = document.getElementById('time');
 var timer = setInterval(updateClock, 1000);
 
 function updateClock() {
-  time.innerHTML = (new Date()).toString();
+  time.innerHTML = new Date().toString();
 }
 
 // Edit these styles to see them take effect immediately
@@ -28,7 +28,7 @@ require('assert');
 
 if (module.hot) {
   module.hot.accept();
-  module.hot.dispose(function() {
+  module.hot.dispose(function () {
     clearInterval(timer);
   });
 }

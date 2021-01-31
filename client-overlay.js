@@ -40,7 +40,7 @@ var entities = new Entities();
 
 function showProblems(type, lines) {
   clientOverlay.innerHTML = '';
-  lines.forEach(function(msg) {
+  lines.forEach(function (msg) {
     msg = ansiHTML(entities.encode(msg));
     var div = document.createElement('div');
     div.style.marginBottom = '26px';
@@ -73,7 +73,7 @@ function problemType(type) {
   );
 }
 
-module.exports = function(options) {
+module.exports = function (options) {
   for (var color in options.ansiColors) {
     if (color in colors) {
       colors[color] = options.ansiColors[color];

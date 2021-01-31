@@ -9,16 +9,16 @@ module.exports = {
     // useful if you run your app from another point like django
     'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
     // And then the actual application
-    './client.js'
+    './client.js',
   ],
   output: {
     path: __dirname,
     publicPath: '/',
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   devtool: '#source-map',
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin(),
   ],
 };

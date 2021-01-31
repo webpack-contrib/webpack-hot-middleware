@@ -2,17 +2,17 @@
 
 var sinon = require('sinon');
 
-describe('client', function() {
+describe('client', function () {
   var s, client, clientOverlay, processUpdate;
 
-  beforeEach(function() {
+  beforeEach(function () {
     s = sinon.createSandbox({ useFakeTimers: true });
   });
-  afterEach(function() {
+  afterEach(function () {
     s.restore();
   });
 
-  context('with default options', function() {
+  context('with default options', function () {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
       global.document = {};
@@ -23,12 +23,12 @@ describe('client', function() {
       };
     });
     beforeEach(loadClient);
-    it('should connect to __webpack_hmr', function() {
+    it('should connect to __webpack_hmr', function () {
       sinon.assert.calledOnce(window.EventSource);
       sinon.assert.calledWithNew(window.EventSource);
       sinon.assert.calledWith(window.EventSource, '/__webpack_hmr');
     });
-    it('should trigger webpack on successful builds', function() {
+    it('should trigger webpack on successful builds', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -42,7 +42,7 @@ describe('client', function() {
       );
       sinon.assert.calledOnce(processUpdate);
     });
-    it('should trigger webpack on successful syncs', function() {
+    it('should trigger webpack on successful syncs', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -56,7 +56,7 @@ describe('client', function() {
       );
       sinon.assert.calledOnce(processUpdate);
     });
-    it('should call subscribeAll handler on default messages', function() {
+    it('should call subscribeAll handler on default messages', function () {
       var spy = sinon.spy();
       client.subscribeAll(spy);
       var message = {
@@ -74,7 +74,7 @@ describe('client', function() {
       sinon.assert.calledOnce(spy);
       sinon.assert.calledWith(spy, message);
     });
-    it('should call subscribeAll handler on custom messages', function() {
+    it('should call subscribeAll handler on custom messages', function () {
       var spy = sinon.spy();
       client.subscribeAll(spy);
 
@@ -88,7 +88,7 @@ describe('client', function() {
       sinon.assert.calledOnce(spy);
       sinon.assert.calledWith(spy, { action: 'thingy' });
     });
-    it('should call only custom handler on custom messages', function() {
+    it('should call only custom handler on custom messages', function () {
       var spy = sinon.spy();
       client.subscribe(spy);
 
@@ -108,7 +108,7 @@ describe('client', function() {
       sinon.assert.calledWith(spy, { custom: 'thingy' });
       sinon.assert.notCalled(processUpdate);
     });
-    it('should not trigger webpack on errored builds', function() {
+    it('should not trigger webpack on errored builds', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -122,7 +122,7 @@ describe('client', function() {
       );
       sinon.assert.notCalled(processUpdate);
     });
-    it('should show overlay on errored builds', function() {
+    it('should show overlay on errored builds', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -140,7 +140,7 @@ describe('client', function() {
         'Actually, 2 things broke',
       ]);
     });
-    it('should hide overlay after errored build fixed', function() {
+    it('should hide overlay after errored build fixed', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -165,7 +165,7 @@ describe('client', function() {
       sinon.assert.calledOnce(clientOverlay.showProblems);
       sinon.assert.calledOnce(clientOverlay.clear);
     });
-    it('should hide overlay after errored build becomes warning', function() {
+    it('should hide overlay after errored build becomes warning', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -190,7 +190,7 @@ describe('client', function() {
       sinon.assert.calledOnce(clientOverlay.showProblems);
       sinon.assert.calledOnce(clientOverlay.clear);
     });
-    it('should trigger webpack on warning builds', function() {
+    it('should trigger webpack on warning builds', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -204,7 +204,7 @@ describe('client', function() {
       );
       sinon.assert.calledOnce(processUpdate);
     });
-    it('should not overlay on warning builds', function() {
+    it('should not overlay on warning builds', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -218,7 +218,7 @@ describe('client', function() {
       );
       sinon.assert.notCalled(clientOverlay.showProblems);
     });
-    it('should show overlay after warning build becomes error', function() {
+    it('should show overlay after warning build becomes error', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -245,7 +245,7 @@ describe('client', function() {
     it("should test more of the client's functionality");
   });
 
-  context('with overlayWarnings: true', function() {
+  context('with overlayWarnings: true', function () {
     beforeEach(function setup() {
       global.__resourceQuery = '?overlayWarnings=true'; // eslint-disable-line no-underscore-dangle
       global.document = {};
@@ -256,7 +256,7 @@ describe('client', function() {
       };
     });
     beforeEach(loadClient);
-    it('should show overlay on errored builds', function() {
+    it('should show overlay on errored builds', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -274,7 +274,7 @@ describe('client', function() {
         'Actually, 2 things broke',
       ]);
     });
-    it('should hide overlay after errored build fixed', function() {
+    it('should hide overlay after errored build fixed', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -299,7 +299,7 @@ describe('client', function() {
       sinon.assert.calledOnce(clientOverlay.showProblems);
       sinon.assert.calledOnce(clientOverlay.clear);
     });
-    it('should show overlay on warning builds', function() {
+    it('should show overlay on warning builds', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -316,7 +316,7 @@ describe('client', function() {
         "This isn't great, but it's not terrible",
       ]);
     });
-    it('should hide overlay after warning build fixed', function() {
+    it('should hide overlay after warning build fixed', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -341,7 +341,7 @@ describe('client', function() {
       sinon.assert.calledOnce(clientOverlay.showProblems);
       sinon.assert.calledOnce(clientOverlay.clear);
     });
-    it('should update overlay after errored build becomes warning', function() {
+    it('should update overlay after errored build becomes warning', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -369,7 +369,7 @@ describe('client', function() {
     });
   });
 
-  context('with name options', function() {
+  context('with name options', function () {
     beforeEach(function setup() {
       global.__resourceQuery = '?name=test'; // eslint-disable-line no-underscore-dangle
       global.window = {
@@ -379,7 +379,7 @@ describe('client', function() {
       };
     });
     beforeEach(loadClient);
-    it('should not trigger webpack if event obj name is different', function() {
+    it('should not trigger webpack if event obj name is different', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -394,7 +394,7 @@ describe('client', function() {
       );
       sinon.assert.notCalled(processUpdate);
     });
-    it('should not trigger webpack on successful syncs if obj name is different', function() {
+    it('should not trigger webpack on successful syncs if obj name is different', function () {
       var eventSource = window.EventSource.lastCall.returnValue;
       eventSource.onmessage(
         makeMessage({
@@ -411,25 +411,25 @@ describe('client', function() {
     });
   });
 
-  context('with no browser environment', function() {
+  context('with no browser environment', function () {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
       delete global.window;
     });
     beforeEach(loadClient);
-    it('should not connect', function() {
+    it('should not connect', function () {
       // doesn't error
     });
   });
 
-  context('with no EventSource', function() {
+  context('with no EventSource', function () {
     beforeEach(function setup() {
       global.__resourceQuery = ''; // eslint-disable-line no-underscore-dangle
       global.window = {};
       s.stub(console, 'warn');
     });
     beforeEach(loadClient);
-    it('should emit warning and not connect', function() {
+    it('should emit warning and not connect', function () {
       sinon.assert.calledOnce(console.warn);
       sinon.assert.calledWithMatch(console.warn, /EventSource/);
     });
@@ -445,10 +445,10 @@ describe('client', function() {
     client = require(path);
   }
 
-  beforeEach(function() {
+  beforeEach(function () {
     clientOverlay = { showProblems: sinon.stub(), clear: sinon.stub() };
     var clientOverlayModule = {
-      exports: function() {
+      exports: function () {
         return clientOverlay;
       },
     };
@@ -459,7 +459,7 @@ describe('client', function() {
       exports: processUpdate,
     };
   });
-  afterEach(function() {
+  afterEach(function () {
     delete require.cache[require.resolve('../client-overlay')];
     delete require.cache[require.resolve('../process-update')];
   });

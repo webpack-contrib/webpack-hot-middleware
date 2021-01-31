@@ -78,7 +78,7 @@ function EventSourceWrapper() {
   var listeners = [];
 
   init();
-  var timer = setInterval(function() {
+  var timer = setInterval(function () {
     if (new Date() - lastActivity > options.timeout) {
       handleDisconnect();
     }
@@ -110,7 +110,7 @@ function EventSourceWrapper() {
   }
 
   return {
-    addMessageListener: function(fn) {
+    addMessageListener: function (fn) {
       listeners.push(fn);
     },
   };
@@ -176,7 +176,7 @@ function createReporter() {
   var previousProblems = null;
   function log(type, obj) {
     var newProblems = obj[type]
-      .map(function(msg) {
+      .map(function (msg) {
         return strip(msg);
       })
       .join('\n');
@@ -205,10 +205,10 @@ function createReporter() {
   }
 
   return {
-    cleanProblemsCache: function() {
+    cleanProblemsCache: function () {
       previousProblems = null;
     },
-    problems: function(type, obj) {
+    problems: function (type, obj) {
       if (options.warn) {
         log(type, obj);
       }
@@ -221,10 +221,10 @@ function createReporter() {
       }
       return true;
     },
-    success: function() {
+    success: function () {
       if (overlay) overlay.clear();
     },
-    useCustomOverlay: function(customOverlay) {
+    useCustomOverlay: function (customOverlay) {
       overlay = customOverlay;
     },
   };

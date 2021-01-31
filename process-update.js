@@ -18,17 +18,17 @@ var applyOptions = {
   ignoreUnaccepted: true,
   ignoreDeclined: true,
   ignoreErrored: true,
-  onUnaccepted: function(data) {
+  onUnaccepted: function (data) {
     console.warn(
       'Ignored an update to unaccepted module ' + data.chain.join(' -> ')
     );
   },
-  onDeclined: function(data) {
+  onDeclined: function (data) {
     console.warn(
       'Ignored an update to declined module ' + data.chain.join(' -> ')
     );
   },
-  onErrored: function(data) {
+  onErrored: function (data) {
     console.error(data.error);
     console.warn(
       'Ignored an error while updating module ' +
@@ -45,7 +45,7 @@ function upToDate(hash) {
   return lastHash == __webpack_hash__;
 }
 
-module.exports = function(hash, moduleMap, options) {
+module.exports = function (hash, moduleMap, options) {
   var reload = options.reload;
   if (!upToDate(hash) && module.hot.status() == 'idle') {
     if (options.log) console.log('[HMR] Checking for updates on the server...');
@@ -53,7 +53,7 @@ module.exports = function(hash, moduleMap, options) {
   }
 
   function check() {
-    var cb = function(err, updatedModules) {
+    var cb = function (err, updatedModules) {
       if (err) return handleError(err);
 
       if (!updatedModules) {
@@ -65,7 +65,7 @@ module.exports = function(hash, moduleMap, options) {
         return null;
       }
 
-      var applyCallback = function(applyErr, renewedModules) {
+      var applyCallback = function (applyErr, renewedModules) {
         if (applyErr) return handleError(applyErr);
 
         if (!upToDate()) check();
@@ -77,7 +77,7 @@ module.exports = function(hash, moduleMap, options) {
       // webpack 2 promise
       if (applyResult && applyResult.then) {
         // HotModuleReplacement.runtime.js refers to the result as `outdatedModules`
-        applyResult.then(function(outdatedModules) {
+        applyResult.then(function (outdatedModules) {
           applyCallback(null, outdatedModules);
         });
         applyResult.catch(applyCallback);
@@ -87,7 +87,7 @@ module.exports = function(hash, moduleMap, options) {
     var result = module.hot.check(false, cb);
     // webpack 2 promise
     if (result && result.then) {
-      result.then(function(updatedModules) {
+      result.then(function (updatedModules) {
         cb(null, updatedModules);
       });
       result.catch(cb);
@@ -95,7 +95,7 @@ module.exports = function(hash, moduleMap, options) {
   }
 
   function logUpdates(updatedModules, renewedModules) {
-    var unacceptedModules = updatedModules.filter(function(moduleId) {
+    var unacceptedModules = updatedModules.filter(function (moduleId) {
       return renewedModules && renewedModules.indexOf(moduleId) < 0;
     });
 
@@ -110,7 +110,7 @@ module.exports = function(hash, moduleMap, options) {
             hmrDocsUrl +
             ' for more details.'
         );
-        unacceptedModules.forEach(function(moduleId) {
+        unacceptedModules.forEach(function (moduleId) {
           console.warn('[HMR]  - ' + (moduleMap[moduleId] || moduleId));
         });
       }
@@ -123,7 +123,7 @@ module.exports = function(hash, moduleMap, options) {
         console.log('[HMR] Nothing hot updated.');
       } else {
         console.log('[HMR] Updated modules:');
-        renewedModules.forEach(function(moduleId) {
+        renewedModules.forEach(function (moduleId) {
           console.log('[HMR]  - ' + (moduleMap[moduleId] || moduleId));
         });
       }

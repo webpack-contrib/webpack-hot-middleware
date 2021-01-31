@@ -1,4 +1,4 @@
 {
-    "reporter": "spec",
-    "exit": true
+  "reporter": "spec",
+  "exit": true
 }

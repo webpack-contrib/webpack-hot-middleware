@@ -8,25 +8,25 @@ var supertest = require('supertest');
 var express = require('express');
 var webpackHotMiddleware = require('../middleware');
 
-describe('middleware', function() {
+describe('middleware', function () {
   var s, compiler, app, middleware;
 
-  context('with default options', function() {
-    beforeEach(setupServer({ log: function() {} }));
+  context('with default options', function () {
+    beforeEach(setupServer({ log: function () {} }));
 
-    it('should create eventStream on /__webpack_hmr', function(done) {
+    it('should create eventStream on /__webpack_hmr', function (done) {
       request('/__webpack_hmr')
         .expect('Content-Type', /^text\/event-stream\b/)
         .end(done);
     });
-    it('should heartbeat every 10 seconds', function(done) {
-      request('/__webpack_hmr').end(function(err, res) {
+    it('should heartbeat every 10 seconds', function (done) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
 
         // Tick 3 times, then verify
         var i = 0;
         tick(10, 'seconds');
-        res.on('data', function() {
+        res.on('data', function () {
           if (++i < 3) {
             tick(10, 'seconds');
           } else {
@@ -36,15 +36,15 @@ describe('middleware', function() {
 
         function verify() {
           assert.equal(res.events.length, 3);
-          res.events.every(function(chunk) {
+          res.events.every(function (chunk) {
             assert(/^data: /.test(chunk));
           });
           done();
         }
       });
     });
-    it('should notify clients when bundle rebuild begins', function(done) {
-      request('/__webpack_hmr').end(function(err, res) {
+    it('should notify clients when bundle rebuild begins', function (done) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
 
         res.on('data', verify);
@@ -59,8 +59,8 @@ describe('middleware', function() {
         }
       });
     });
-    it('should notify clients when bundle is complete', function(done) {
-      request('/__webpack_hmr').end(function(err, res) {
+    it('should notify clients when bundle is complete', function (done) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
 
         res.on('data', verify);
@@ -84,8 +84,8 @@ describe('middleware', function() {
         }
       });
     });
-    it('should notify clients when bundle is complete (multicompiler)', function(done) {
-      request('/__webpack_hmr').end(function(err, res) {
+    it('should notify clients when bundle is complete (multicompiler)', function (done) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
 
         res.once('data', verify);
@@ -120,7 +120,7 @@ describe('middleware', function() {
         }
       });
     });
-    it('should notify new clients about current compilation state', function(done) {
+    it('should notify new clients about current compilation state', function (done) {
       compiler.emit(
         'done',
         stats({
@@ -132,7 +132,7 @@ describe('middleware', function() {
         })
       );
 
-      request('/__webpack_hmr').end(function(err, res) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
         assert.equal(res.events.length, 1);
         var event = JSON.parse(res.events[0].substring(5));
@@ -140,7 +140,7 @@ describe('middleware', function() {
         done();
       });
     });
-    it('should fallback to the compilation name if no stats name is provided and there is one stats object', function(done) {
+    it('should fallback to the compilation name if no stats name is provided and there is one stats object', function (done) {
       compiler.emit(
         'done',
         stats({
@@ -152,7 +152,7 @@ describe('middleware', function() {
         })
       );
 
-      request('/__webpack_hmr').end(function(err, res) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
 
         var event = JSON.parse(res.events[0].substring(5));
@@ -161,13 +161,13 @@ describe('middleware', function() {
       });
     });
     it('should have tests on the payload of bundle complete');
-    it('should notify all clients', function(done) {
-      request('/__webpack_hmr').end(function(err, res) {
+    it('should notify all clients', function (done) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
         res.on('data', verify);
         when();
       });
-      request('/__webpack_hmr').end(function(err, res) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
         res.on('data', verify);
         when();
@@ -189,8 +189,8 @@ describe('middleware', function() {
         done();
       }
     });
-    it('should allow custom events to be published', function(done) {
-      request('/__webpack_hmr').end(function(err, res) {
+    it('should allow custom events to be published', function (done) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
         res.on('data', verify);
 
@@ -206,25 +206,25 @@ describe('middleware', function() {
     });
     // Express HTTP/2 support is in progress: https://github.com/expressjs/express/pull/3390
     it('should not contain `connection: keep-alive` header for HTTP/2 request');
-    it('should contain `connection: keep-alive` header for HTTP/1 request', function(done) {
-      request('/__webpack_hmr').end(function(err, res) {
+    it('should contain `connection: keep-alive` header for HTTP/1 request', function (done) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
         assert.equal(res.headers['connection'], 'keep-alive');
         done();
       });
     });
 
-    it('should end event stream clients and disable compiler hooks on close', function(done) {
-      request('/__webpack_hmr').end(function(err, res) {
+    it('should end event stream clients and disable compiler hooks on close', function (done) {
+      request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
 
         var called = 0;
-        res.on('data', function() {
+        res.on('data', function () {
           called++;
         });
 
-        res.on('end', function() {
-          middleware({}, {}, function(err) {
+        res.on('end', function () {
+          middleware({}, {}, function (err) {
             assert(!err);
             assert.equal(called, 3);
             done();
@@ -242,13 +242,13 @@ describe('middleware', function() {
     });
   });
 
-  beforeEach(function() {
+  beforeEach(function () {
     s = sinon.createSandbox();
     s.useFakeTimers();
     compiler = new events.EventEmitter();
     compiler.plugin = compiler.on;
   });
-  afterEach(function() {
+  afterEach(function () {
     s.restore();
   });
   function tick(time, unit) {
@@ -256,7 +256,7 @@ describe('middleware', function() {
     s.clock.tick(time + 10); // +10ms for some leeway
   }
   function setupServer(opts) {
-    return function() {
+    return function () {
       app = express();
       middleware = webpackHotMiddleware(compiler, opts);
       app.use(middleware);
@@ -264,28 +264,26 @@ describe('middleware', function() {
   }
   function request(path) {
     // Wrap some stuff up so supertest works with streaming responses
-    var req = supertest(app)
-      .get(path)
-      .buffer(false);
+    var req = supertest(app).get(path).buffer(false);
     var end = req.end;
-    req.end = function(callback) {
-      req.on('error', callback).on('response', function(res) {
+    req.end = function (callback) {
+      req.on('error', callback).on('response', function (res) {
         Object.defineProperty(res, 'events', {
-          get: function() {
+          get: function () {
             return res.text.trim().split('\n\n');
           },
         });
-        res.on('data', function(chunk) {
+        res.on('data', function (chunk) {
           res.text = (res.text || '') + chunk;
         });
-        process.nextTick(function() {
-          req.assert(null, res, function(err) {
+        process.nextTick(function () {
+          req.assert(null, res, function (err) {
             callback(err, res);
           });
         });
       });
 
-      end.call(req, function() {});
+      end.call(req, function () {});
     };
     return req;
   }
@@ -294,7 +292,7 @@ describe('middleware', function() {
       compilation: {
         name: 'compilation',
       },
-      toJson: function() {
+      toJson: function () {
         return data;
       },
     };

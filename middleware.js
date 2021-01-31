@@ -33,7 +33,7 @@ function webpackHotMiddleware(compiler, opts) {
     latestStats = statsResult;
     publishStats('built', latestStats, eventStream, opts.log);
   }
-  var middleware = function(req, res, next) {
+  var middleware = function (req, res, next) {
     if (closed) return next();
     if (!pathMatch(req.url, opts.path)) return next();
     eventStream.handler(req, res);
@@ -43,11 +43,11 @@ function webpackHotMiddleware(compiler, opts) {
       publishStats('sync', latestStats, eventStream);
     }
   };
-  middleware.publish = function(payload) {
+  middleware.publish = function (payload) {
     if (closed) return;
     eventStream.publish(payload);
   };
-  middleware.close = function() {
+  middleware.close = function () {
     if (closed) return;
     // Can't remove compiler plugins, so we just set a flag and noop if closed
     // https://github.com/webpack/tapable/issues/32#issuecomment-350644466
@@ -62,24 +62,24 @@ function createEventStream(heartbeat) {
   var clientId = 0;
   var clients = {};
   function everyClient(fn) {
-    Object.keys(clients).forEach(function(id) {
+    Object.keys(clients).forEach(function (id) {
       fn(clients[id]);
     });
   }
   var interval = setInterval(function heartbeatTick() {
-    everyClient(function(client) {
+    everyClient(function (client) {
       client.write('data: \uD83D\uDC93\n\n');
     });
   }, heartbeat).unref();
   return {
-    close: function() {
+    close: function () {
       clearInterval(interval);
-      everyClient(function(client) {
+      everyClient(function (client) {
         if (!client.finished) client.end();
       });
       clients = {};
     },
-    handler: function(req, res) {
+    handler: function (req, res) {
       var headers = {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'text/event-stream;charset=utf-8',
@@ -101,13 +101,13 @@ function createEventStream(heartbeat) {
       res.write('\n');
       var id = clientId++;
       clients[id] = res;
-      req.on('close', function() {
+      req.on('close', function () {
         if (!res.finished) res.end();
         delete clients[id];
       });
     },
-    publish: function(payload) {
-      everyClient(function(client) {
+    publish: function (payload) {
+      everyClient(function (client) {
         client.write('data: ' + JSON.stringify(payload) + '\n\n');
       });
     },
@@ -125,7 +125,7 @@ function publishStats(action, statsResult, eventStream, log) {
   });
   // For multi-compiler, stats will be an object with a 'children' array of stats
   var bundles = extractBundles(stats);
-  bundles.forEach(function(stats) {
+  bundles.forEach(function (stats) {
     var name = stats.name || '';
 
     // Fallback to compilation name in case of 1 bundle (if it exists)
@@ -168,7 +168,7 @@ function extractBundles(stats) {
 
 function buildModuleMap(modules) {
   var map = {};
-  modules.forEach(function(module) {
+  modules.forEach(function (module) {
     map[module.id] = module.name;
   });
   return map;

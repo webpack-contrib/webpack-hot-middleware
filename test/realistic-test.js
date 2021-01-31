@@ -12,9 +12,9 @@ var webpackHotMiddleware = require('../middleware');
 
 var app, compiler;
 
-describe('realistic single compiler', function() {
+describe('realistic single compiler', function () {
   var clientCode = path.resolve(__dirname, './fixtures/single/client.js');
-  before(function() {
+  before(function () {
     require('fs').writeFileSync(clientCode, 'var a = ' + Math.random() + ';\n');
 
     compiler = webpack({
@@ -35,22 +35,22 @@ describe('realistic single compiler', function() {
     );
     app.use(
       webpackHotMiddleware(compiler, {
-        log: function() {},
+        log: function () {},
       })
     );
   });
 
-  it('should create eventStream on /__webpack_hmr', function(done) {
+  it('should create eventStream on /__webpack_hmr', function (done) {
     request('/__webpack_hmr')
       .expect('Content-Type', /^text\/event-stream\b/)
       .end(done);
   });
 
-  describe('first build', function() {
-    it('should publish sync event', function(done) {
+  describe('first build', function () {
+    it('should publish sync event', function (done) {
       request('/__webpack_hmr')
         .expect('Content-Type', /^text\/event-stream\b/)
-        .end(function(err, res) {
+        .end(function (err, res) {
           if (err) return done(err);
 
           var event = JSON.parse(res.events[0].substring(5));
@@ -67,12 +67,12 @@ describe('realistic single compiler', function() {
         });
     });
   });
-  describe('after file change', function() {
+  describe('after file change', function () {
     var res;
-    before(function(done) {
+    before(function (done) {
       request('/__webpack_hmr')
         .expect('Content-Type', /^text\/event-stream\b/)
-        .end(function(err, _res) {
+        .end(function (err, _res) {
           if (err) return done(err);
 
           res = _res;
@@ -84,12 +84,12 @@ describe('realistic single compiler', function() {
           );
         });
     });
-    it('should publish building event', function(done) {
+    it('should publish building event', function (done) {
       waitUntil(
-        function() {
+        function () {
           return res.events.length >= 2;
         },
-        function() {
+        function () {
           var event = JSON.parse(res.events[1].substring(5));
 
           assert.equal(event.action, 'building');
@@ -98,12 +98,12 @@ describe('realistic single compiler', function() {
         }
       );
     });
-    it('should publish built event', function(done) {
+    it('should publish built event', function (done) {
       waitUntil(
-        function() {
+        function () {
           return res.events.length >= 3;
         },
-        function() {
+        function () {
           var event = JSON.parse(res.events[2].substring(5));
 
           assert.equal(event.action, 'built');
@@ -123,28 +123,26 @@ describe('realistic single compiler', function() {
 
 function request(path) {
   // Wrap some stuff up so supertest works with streaming responses
-  var req = supertest(app)
-    .get(path)
-    .buffer(false);
+  var req = supertest(app).get(path).buffer(false);
   var end = req.end;
-  req.end = function(callback) {
-    req.on('error', callback).on('response', function(res) {
+  req.end = function (callback) {
+    req.on('error', callback).on('response', function (res) {
       Object.defineProperty(res, 'events', {
-        get: function() {
+        get: function () {
           return res.text.trim().split('\n\n');
         },
       });
-      res.on('data', function(chunk) {
+      res.on('data', function (chunk) {
         res.text = (res.text || '') + chunk;
       });
-      process.nextTick(function() {
-        req.assert(null, res, function(err) {
+      process.nextTick(function () {
+        req.assert(null, res, function (err) {
           callback(err, res);
         });
       });
     });
 
-    end.call(req, function() {});
+    end.call(req, function () {});
   };
   return req;
 }
@@ -153,7 +151,7 @@ function waitUntil(condition, body) {
   if (condition()) {
     body();
   } else {
-    setTimeout(function() {
+    setTimeout(function () {
       waitUntil(condition, body);
     }, 50);
   }
