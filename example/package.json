@@ -5,11 +5,11 @@
   "author": "Glen Mailer <glen@stainlessed.co.uk>",
   "license": "MIT",
   "dependencies": {
-    "console-stamp": "^0.2.6",
-    "express": "^4.12.3",
-    "morgan": "^1.5.2",
-    "webpack": "^4.0.1",
-    "webpack-dev-middleware": "^3.0.0",
+    "console-stamp": "^0.2.9",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "webpack": "^4.46.0",
+    "webpack-dev-middleware": "^3.7.3",
     "webpack-hot-middleware": "file:.."
   },
   "scripts": {
