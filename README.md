@@ -34,7 +34,13 @@ Next, enable hot reloading in your webpack config:
     Occurence ensures consistent build hashes, hot module replacement is
     somewhat self-explanatory, no errors is used to handle errors more cleanly.
 
- 3. Add `'webpack-hot-middleware/client'` into the `entry` array.
+ 3. Add `'webpack-hot-middleware/client'` into the `main` array of the `entry` 
+    object:
+    ```js
+    entry: {
+        main: ['./src/main.js', 'webpack-hot-middleware/client']
+    }
+    ```
     This connects to the server to receive notifications when the bundle
     rebuilds and then updates your client bundle accordingly.
 
