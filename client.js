@@ -15,7 +15,9 @@ var options = {
   ansiColors: {},
 };
 if (__resourceQuery) {
-  var overrides = Object.fromEntries(new URLSearchParams(__resourceQuery.slice(1)));
+  var overrides = Object.fromEntries(
+    new URLSearchParams(__resourceQuery.slice(1))
+  );
   setOverrides(overrides);
 }
 
@@ -24,8 +26,8 @@ if (typeof window === 'undefined') {
 } else if (typeof window.EventSource === 'undefined') {
   console.warn(
     "webpack-hot-middleware's client requires EventSource to work. " +
-    'You should include a polyfill if you want to support this browser: ' +
-    'https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools'
+      'You should include a polyfill if you want to support this browser: ' +
+      'https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events#Tools'
   );
 } else {
   if (options.autoConnect) {
@@ -239,8 +241,8 @@ function processMessage(obj) {
       if (options.log) {
         console.log(
           '[HMR] bundle ' +
-          (obj.name ? "'" + obj.name + "' " : '') +
-          'rebuilding'
+            (obj.name ? "'" + obj.name + "' " : '') +
+            'rebuilding'
         );
       }
       break;
@@ -248,10 +250,10 @@ function processMessage(obj) {
       if (options.log) {
         console.log(
           '[HMR] bundle ' +
-          (obj.name ? "'" + obj.name + "' " : '') +
-          'rebuilt in ' +
-          obj.time +
-          'ms'
+            (obj.name ? "'" + obj.name + "' " : '') +
+            'rebuilt in ' +
+            obj.time +
+            'ms'
         );
       }
     // fall through
