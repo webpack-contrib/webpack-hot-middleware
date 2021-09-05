@@ -28,7 +28,6 @@
   "dependencies": {
     "ansi-html-community": "0.0.8",
     "html-entities": "^2.1.0",
-    "querystring": "^0.2.0",
     "strip-ansi": "^6.0.0"
   },
   "devDependencies": {
