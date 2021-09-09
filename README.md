@@ -91,7 +91,7 @@ Configuration options can be passed to the client by adding querystring paramete
 * **quiet** - Set to `true` to disable all console logging.
 * **dynamicPublicPath** - Set to `true` to use webpack `publicPath` as prefix of `path`. (We can set `__webpack_public_path__` dynamically at runtime in the entry point, see note of [output.publicPath](https://webpack.js.org/configuration/output/#output-publicpath))
 * **autoConnect** - Set to `false` to use to prevent a connection being automatically opened from the client to the webpack back-end - ideal if you need to modify the options using the `setOptionsAndConnect` function
-* **ansiColors** - An object to customize the client overlay colors as mentioned in the [ansi-html](https://github.com/Tjatse/ansi-html/blob/99ec49e431c70af6275b3c4e00c7be34be51753c/README.md#set-colors) package.
+* **ansiColors** - An object to customize the client overlay colors as mentioned in the [ansi-html-community](https://github.com/mahdyar/ansi-html-community#set-colors) package.
 * **overlayStyles** - An object to let you override or add new inline styles to the client overlay div.
 * **overlayWarnings** - Set to `true` to enable client overlay on warnings in addition to errors.
 
