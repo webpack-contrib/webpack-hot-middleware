@@ -1,6 +1,6 @@
 {
   "name": "webpack-hot-middleware",
-  "version": "2.25.1",
+  "version": "2.25.2",
   "description": "Webpack hot reloading you can attach to your own server",
   "keywords": [
     "webpack",
