@@ -10,7 +10,7 @@ workflows:
       - test:
           matrix:
             parameters:
-              node_version: [lts, current]
+              node_version: [lts]
           filters:
             tags:
               only: /.*/
