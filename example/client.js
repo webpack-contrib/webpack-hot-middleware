@@ -24,7 +24,7 @@ app.style.verticalAlign = 'middle';
 
 // Uncomment this next line to trigger a warning
 // require('Assert')
-require('assert');
+// require('assert');
 
 if (module.hot) {
   module.hot.accept();

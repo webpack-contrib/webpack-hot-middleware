@@ -8,11 +8,12 @@
     "console-stamp": "^0.2.9",
     "express": "^4.17.1",
     "morgan": "^1.10.0",
-    "webpack": "^4.46.0",
-    "webpack-dev-middleware": "^3.7.3",
+    "webpack": "^5.74.0",
+    "webpack-dev-middleware": "^5.3.3",
     "webpack-hot-middleware": "file:.."
   },
   "scripts": {
+    "start:base": "WEBPACK_CONFIG=./webpack.config.js node server.js",
     "start:multientry": "WEBPACK_CONFIG=./webpack.config.multientry.js node server.js"
   }
 }
