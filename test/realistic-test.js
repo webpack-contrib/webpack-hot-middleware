@@ -32,7 +32,7 @@ describe('realistic single compiler', function () {
     app.use(
       webpackDevMiddleware(compiler, {
         publicPath: '/',
-        logLevel: 'silent',
+        // stats: 'none',
       })
     );
     app.use(
@@ -174,7 +174,7 @@ describe('realistic multi compiler', function () {
     app.use(
       webpackDevMiddleware(multiCompiler, {
         publicPath: '/',
-        logLevel: 'silent',
+        // stats: 'none',
       })
     );
     app.use(

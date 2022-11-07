@@ -16,10 +16,6 @@ module.exports = {
     publicPath: '/',
     filename: '[name].js',
   },
-  devtool: '#source-map',
-  plugins: [
-    new webpack.optimize.OccurrenceOrderPlugin(),
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-  ],
+  devtool: 'source-map',
+  plugins: [new webpack.HotModuleReplacementPlugin()],
 };
