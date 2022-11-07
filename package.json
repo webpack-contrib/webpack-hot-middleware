@@ -34,7 +34,7 @@
     "eslint": "^7.19.0",
     "eslint-plugin-prettier": "^3.3.1",
     "express": "^4.17.1",
-    "mocha": "^8.2.1",
+    "mocha": "^10.1.0",
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "sinon": "^9.2.4",
