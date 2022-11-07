@@ -46,4 +46,4 @@ jobs:
     working_directory: /mnt/ramdisk
     steps:
       - setup
-      - run: npm test
+      - run: NODE_OPTIONS=--openssl-legacy-provider npm test

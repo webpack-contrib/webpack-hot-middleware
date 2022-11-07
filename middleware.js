@@ -115,22 +115,35 @@ function createEventStream(heartbeat) {
 }
 
 function publishStats(action, statsResult, eventStream, log) {
-  var stats = statsResult.toJson({
+  var statsOptions = {
     all: false,
     cached: true,
     children: true,
     modules: true,
     timings: true,
     hash: true,
-  });
-  // For multi-compiler, stats will be an object with a 'children' array of stats
-  var bundles = extractBundles(stats);
+  };
+
+  var bundles = [];
+
+  // multi-compiler stats have stats for each child compiler
+  // see https://github.com/webpack/webpack/blob/main/lib/MultiCompiler.js#L97
+  if (statsResult.stats) {
+    var processed = statsResult.stats.map(function (stats) {
+      return extractBundles(normalizeStats(stats, statsOptions));
+    });
+
+    bundles = processed.flat();
+  } else {
+    bundles = extractBundles(normalizeStats(statsResult, statsOptions));
+  }
+
   bundles.forEach(function (stats) {
     var name = stats.name || '';
 
     // Fallback to compilation name in case of 1 bundle (if it exists)
-    if (bundles.length === 1 && !name && statsResult.compilation) {
-      name = statsResult.compilation.name || '';
+    if (!name && stats.compilation) {
+      name = stats.compilation.name || '';
     }
 
     if (log) {
@@ -153,6 +166,19 @@ function publishStats(action, statsResult, eventStream, log) {
       modules: buildModuleMap(stats.modules),
     });
   });
+}
+
+function normalizeStats(stats, statsOptions) {
+  var statsJson = stats.toJson(statsOptions);
+
+  if (stats.compilation) {
+    // webpack 5 has the compilation property directly on stats object
+    Object.assign(statsJson, {
+      compilation: stats.compilation,
+    });
+  }
+
+  return statsJson;
 }
 
 function extractBundles(stats) {

@@ -120,6 +120,46 @@ describe('middleware', function () {
         }
       });
     });
+    it('should notify clients when bundle is complete (webpack5 multicompiler)', function (done) {
+      request('/__webpack_hmr').end(function (err, res) {
+        if (err) return done(err);
+
+        res.once('data', verify);
+
+        var multiStats = Array.from(new Array(2)).map(function (_, idx) {
+          var hash =
+            'deadbeeffeddad' +
+            String.prototype.toLowerCase.call(
+              String.fromCharCode((idx % 26) + 65)
+            );
+          return Object.assign(
+            stats({
+              time: 100,
+              hash: hash,
+              warnings: false,
+              errors: false,
+              modules: [],
+            }),
+            { compilation: { name: idx } }
+          );
+        });
+
+        compiler.emit('done', {
+          toJson: function () {
+            //not implemented
+          },
+          stats: multiStats,
+        });
+
+        function verify() {
+          assert.equal(res.events.length, 1);
+          var event = JSON.parse(res.events[0].substring(5));
+          assert.equal(event.action, 'built');
+          assert.equal(event.hash, multiStats[0].toJson().hash);
+          done();
+        }
+      });
+    });
     it('should notify new clients about current compilation state', function (done) {
       compiler.emit(
         'done',
