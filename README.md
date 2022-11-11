@@ -38,7 +38,7 @@ Next, enable hot reloading in your webpack config:
     object. For example:
     ```js
     entry: {
-        main: ['./src/main.js', 'webpack-hot-middleware/client']
+        main: ['webpack-hot-middleware/client', './src/main.js']
     }
     ```
     This connects to the server to receive notifications when the bundle
