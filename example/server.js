@@ -22,7 +22,6 @@ app.use(require('morgan')('short'));
   // Step 2: Attach the dev middleware to the compiler & the server
   app.use(
     require('webpack-dev-middleware')(compiler, {
-      logLevel: 'warn',
       publicPath: webpackConfig.output.publicPath,
     })
   );

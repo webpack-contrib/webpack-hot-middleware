@@ -16,9 +16,6 @@ module.exports = {
     publicPath: '/',
     filename: 'bundle.js',
   },
-  devtool: '#source-map',
-  plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-  ],
+  devtool: 'source-map',
+  plugins: [new webpack.HotModuleReplacementPlugin()],
 };

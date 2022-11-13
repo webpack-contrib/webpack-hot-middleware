@@ -10,7 +10,7 @@ workflows:
       - test:
           matrix:
             parameters:
-              node_version: [lts, current]
+              node_version: [lts]
           filters:
             tags:
               only: /.*/
@@ -46,4 +46,4 @@ jobs:
     working_directory: /mnt/ramdisk
     steps:
       - setup
-      - run: npm test
+      - run: NODE_OPTIONS=--openssl-legacy-provider npm test

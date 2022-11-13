@@ -21,7 +21,7 @@ var styles = {
   textAlign: 'left',
 };
 
-var ansiHTML = require('ansi-html');
+var ansiHTML = require('ansi-html-community');
 var colors = {
   reset: ['transparent', 'transparent'],
   black: '181818',
