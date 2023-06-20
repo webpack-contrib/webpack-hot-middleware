@@ -15,9 +15,12 @@ var options = {
   ansiColors: {},
 };
 if (__resourceQuery) {
-  var overrides = Object.fromEntries(
-    new URLSearchParams(__resourceQuery.slice(1))
-  );
+  var params = Array.from(new URLSearchParams(__resourceQuery.slice(1)));
+  var overrides = params.reduce(function (memo, param) {
+    memo[param[0]] = param[1];
+    return memo;
+  }, {});
+
   setOverrides(overrides);
 }
 
