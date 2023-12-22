@@ -9,6 +9,8 @@ function webpackHotMiddleware(compiler, opts) {
     typeof opts.log == 'undefined' ? console.log.bind(console) : opts.log;
   opts.path = opts.path || '/__webpack_hmr';
   opts.heartbeat = opts.heartbeat || 10 * 1000;
+  opts.statsCached =
+    typeof opts.statsCached == 'undefined' ? true : opts.statsCached;
 
   var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
@@ -31,7 +33,7 @@ function webpackHotMiddleware(compiler, opts) {
     if (closed) return;
     // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
-    publishStats('built', latestStats, eventStream, opts.log);
+    publishStats('built', latestStats, eventStream, opts.log, opts.statsCached);
   }
   var middleware = function (req, res, next) {
     if (closed) return next();
@@ -40,7 +42,7 @@ function webpackHotMiddleware(compiler, opts) {
     if (latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
-      publishStats('sync', latestStats, eventStream);
+      publishStats('sync', latestStats, eventStream, false, opts.statsCached);
     }
   };
   middleware.publish = function (payload) {
@@ -114,10 +116,10 @@ function createEventStream(heartbeat) {
   };
 }
 
-function publishStats(action, statsResult, eventStream, log) {
+function publishStats(action, statsResult, eventStream, log, statsCached) {
   var statsOptions = {
     all: false,
-    cached: true,
+    cached: statsCached,
     children: true,
     modules: true,
     timings: true,
