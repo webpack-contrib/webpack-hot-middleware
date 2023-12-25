@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.26.0](https://github.com/webpack/webpack-dev-middleware/compare/v2.25.4...v2.26.0) (2023-12-25)
+
+
+### Feature
+
+* added the `statsOption` option
+
 ### [2.25.4](https://github.com/webpack/webpack-dev-middleware/compare/v2.25.3...v2.25.4) (2023-06-21)
 
 
