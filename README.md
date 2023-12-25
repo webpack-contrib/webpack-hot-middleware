@@ -96,6 +96,7 @@ Configuration options can be passed to the client by adding querystring paramete
 * **ansiColors** - An object to customize the client overlay colors as mentioned in the [ansi-html-community](https://github.com/mahdyar/ansi-html-community#set-colors) package.
 * **overlayStyles** - An object to let you override or add new inline styles to the client overlay div.
 * **overlayWarnings** - Set to `true` to enable client overlay on warnings in addition to errors.
+* **statsOptions** - An object to customize stats options.
 
 > Note:
 > Since the `ansiColors` and `overlayStyles` options are passed via query string, you'll need to uri encode your stringified options like below:
