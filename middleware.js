@@ -9,8 +9,8 @@ function webpackHotMiddleware(compiler, opts) {
     typeof opts.log == 'undefined' ? console.log.bind(console) : opts.log;
   opts.path = opts.path || '/__webpack_hmr';
   opts.heartbeat = opts.heartbeat || 10 * 1000;
-  opts.statsCached =
-    typeof opts.statsCached == 'undefined' ? true : opts.statsCached;
+  opts.statsOptions =
+    typeof opts.statsOptions == 'undefined' ? {} : opts.statsOptions;
 
   var eventStream = createEventStream(opts.heartbeat);
   var latestStats = null;
@@ -33,7 +33,13 @@ function webpackHotMiddleware(compiler, opts) {
     if (closed) return;
     // Keep hold of latest stats so they can be propagated to new clients
     latestStats = statsResult;
-    publishStats('built', latestStats, eventStream, opts.log, opts.statsCached);
+    publishStats(
+      'built',
+      latestStats,
+      eventStream,
+      opts.log,
+      opts.statsOptions
+    );
   }
   var middleware = function (req, res, next) {
     if (closed) return next();
@@ -42,7 +48,7 @@ function webpackHotMiddleware(compiler, opts) {
     if (latestStats) {
       // Explicitly not passing in `log` fn as we don't want to log again on
       // the server
-      publishStats('sync', latestStats, eventStream, false, opts.statsCached);
+      publishStats('sync', latestStats, eventStream, false, opts.statsOptions);
     }
   };
   middleware.publish = function (payload) {
@@ -116,17 +122,20 @@ function createEventStream(heartbeat) {
   };
 }
 
-function publishStats(action, statsResult, eventStream, log, statsCached) {
-  var statsOptions = {
-    all: false,
-    cached: statsCached,
-    children: true,
-    modules: true,
-    timings: true,
-    hash: true,
-    errors: true,
-    warnings: true,
-  };
+function publishStats(action, statsResult, eventStream, log, statsOptions) {
+  var resultStatsOptions = Object.assign(
+    {
+      all: false,
+      cached: true,
+      children: true,
+      modules: true,
+      timings: true,
+      hash: true,
+      errors: true,
+      warnings: true,
+    },
+    statsOptions
+  );
 
   var bundles = [];
 
@@ -134,12 +143,12 @@ function publishStats(action, statsResult, eventStream, log, statsCached) {
   // see https://github.com/webpack/webpack/blob/main/lib/MultiCompiler.js#L97
   if (statsResult.stats) {
     var processed = statsResult.stats.map(function (stats) {
-      return extractBundles(normalizeStats(stats, statsOptions));
+      return extractBundles(normalizeStats(stats, resultStatsOptions));
     });
 
     bundles = processed.flat();
   } else {
-    bundles = extractBundles(normalizeStats(statsResult, statsOptions));
+    bundles = extractBundles(normalizeStats(statsResult, resultStatsOptions));
   }
 
   bundles.forEach(function (stats) {
