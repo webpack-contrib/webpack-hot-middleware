@@ -193,7 +193,9 @@ function formatErrors(errors) {
 
   // Convert webpack@5 error info into a backwards-compatible flat string
   return errors.map(function (error) {
-    return error.moduleName + ' ' + error.loc + '\n' + error.message;
+    var moduleName = error.moduleName || '';
+    var loc = error.loc || '';
+    return moduleName + ' ' + loc + '\n' + error.message;
   });
 }
 
