@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.26.1](https://github.com/webpack/webpack-dev-middleware/compare/v2.26.0...v2.26.1) (2024-02-01)
+
+
+### Fixes
+
+* add fallbacks to `moduleName` and `loc` webpack 5 error fields if not present in middleware's error formatter
+
 ### [2.26.0](https://github.com/webpack/webpack-dev-middleware/compare/v2.25.4...v2.26.0) (2023-12-25)
 
 
