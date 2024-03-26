@@ -1,4 +1,5 @@
 module.exports = webpackHotMiddleware;
+module.exports.createEventStream = createEventStream;
 
 var helpers = require('./helpers');
 var pathMatch = helpers.pathMatch;
@@ -12,7 +13,7 @@ function webpackHotMiddleware(compiler, opts) {
   opts.statsOptions =
     typeof opts.statsOptions == 'undefined' ? {} : opts.statsOptions;
 
-  var eventStream = createEventStream(opts.heartbeat);
+  var eventStream = opts.eventStream || createEventStream(opts.heartbeat);
   var latestStats = null;
   var closed = false;
 
@@ -27,7 +28,7 @@ function webpackHotMiddleware(compiler, opts) {
     if (closed) return;
     latestStats = null;
     if (opts.log) opts.log('webpack building...');
-    eventStream.publish({ action: 'building' });
+    eventStream.publish({ action: 'building', name: compiler.name });
   }
   function onDone(statsResult) {
     if (closed) return;

@@ -241,6 +241,9 @@ var subscribeAllHandler;
 function processMessage(obj) {
   switch (obj.action) {
     case 'building':
+      if (obj.name && options.name && obj.name !== options.name) {
+        return;
+      }
       if (options.log) {
         console.log(
           '[HMR] bundle ' +
@@ -250,6 +253,9 @@ function processMessage(obj) {
       }
       break;
     case 'built':
+      if (obj.name && options.name && obj.name !== options.name) {
+          return;
+      }
       if (options.log) {
         console.log(
           '[HMR] bundle ' +
