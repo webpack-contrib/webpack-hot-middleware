@@ -121,15 +121,19 @@ function EventSourceWrapper() {
 }
 
 function getEventSourceWrapper() {
-  if (!window.__whmEventSourceWrapper) {
-    window.__whmEventSourceWrapper = {};
+  var top = window;
+  if (window.self !== window.top) {
+    top = window.top;
   }
-  if (!window.__whmEventSourceWrapper[options.path]) {
+  if (!top.__whmEventSourceWrapper) {
+    top.__whmEventSourceWrapper = {};
+  }
+  if (!top.__whmEventSourceWrapper[options.path]) {
     // cache the wrapper for other entries loaded on
     // the same page with the same options.path
-    window.__whmEventSourceWrapper[options.path] = EventSourceWrapper();
+    top.__whmEventSourceWrapper[options.path] = EventSourceWrapper();
   }
-  return window.__whmEventSourceWrapper[options.path];
+  return top.__whmEventSourceWrapper[options.path];
 }
 
 function connect() {
