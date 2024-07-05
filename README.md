@@ -90,6 +90,7 @@ Configuration options can be passed to the client by adding querystring paramete
 * **overlay** - Set to `false` to disable the DOM-based client-side overlay.
 * **reload** - Set to `true` to auto-reload the page when webpack gets stuck.
 * **noInfo** - Set to `true` to disable informational console logging.
+* **noWarn** - Set to `true` to disable warning console logging.
 * **quiet** - Set to `true` to disable all console logging.
 * **dynamicPublicPath** - Set to `true` to use webpack `publicPath` as prefix of `path`. (We can set `__webpack_public_path__` dynamically at runtime in the entry point, see note of [output.publicPath](https://webpack.js.org/configuration/output/#output-publicpath))
 * **autoConnect** - Set to `false` to use to prevent a connection being automatically opened from the client to the webpack back-end - ideal if you need to modify the options using the `setOptionsAndConnect` function
