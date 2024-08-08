@@ -226,7 +226,7 @@ function extractBundles(stats) {
 function buildModuleMap(modules) {
   var map = {};
   modules.forEach(function (module) {
-    map[module.id] = module.name;
+    map[module.id || module.index || module.identifier] = module.name;
   });
   return map;
 }
