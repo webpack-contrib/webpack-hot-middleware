@@ -54,6 +54,9 @@ function setOverrides(overrides) {
   if (overrides.noInfo && overrides.noInfo !== 'false') {
     options.log = false;
   }
+  if (overrides.noWarn && overrides.noWarn !== 'false') {
+    options.warn = false;
+  }
   if (overrides.name) {
     options.name = overrides.name;
   }
