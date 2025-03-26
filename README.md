@@ -27,7 +27,7 @@ Next, enable hot reloading in your webpack config:
     ]
     ```
 
-    Occurence ensures consistent build hashes, hot module replacement is
+    Occurrence ensures consistent build hashes, hot module replacement is
     somewhat self-explanatory, no errors is used to handle errors more cleanly.
 
  3. Add `'webpack-hot-middleware/client'` into an array of the `entry` 
