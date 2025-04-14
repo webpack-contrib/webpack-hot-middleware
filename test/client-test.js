@@ -377,6 +377,7 @@ describe('client', function () {
           close: sinon.spy(),
         }),
       };
+      s.stub(console, 'log');
     });
     beforeEach(loadClient);
     it('should not trigger webpack if event obj name is different', function () {
@@ -408,6 +409,26 @@ describe('client', function () {
         })
       );
       sinon.assert.notCalled(processUpdate);
+    });
+    it('should not log building if obj name is different', function () {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(
+        makeMessage({
+          name: 'bar',
+          action: 'building',
+        })
+      );
+      sinon.assert.notCalled(console.log);
+    });
+    it('should not log built if obj name is different', function () {
+      var eventSource = window.EventSource.lastCall.returnValue;
+      eventSource.onmessage(
+        makeMessage({
+          name: 'bar',
+          action: 'built',
+        })
+      );
+      sinon.assert.notCalled(console.log);
     });
   });
 

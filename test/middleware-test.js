@@ -19,6 +19,19 @@ describe('middleware', function () {
         .expect('Content-Type', /^text\/event-stream\b/)
         .end(done);
     });
+    it('uses provided eventStream', function (done) {
+      setupServer({
+        eventStream: {
+          handler: function (req, res) {
+            res.writeHead(201, { 'Content-Type': 'fake content type' });
+            res.write('\n');
+          },
+        },
+      })();
+      request('/__webpack_hmr')
+        .expect('Content-Type', 'fake content type')
+        .end(done);
+    });
     it('should heartbeat every 10 seconds', function (done) {
       request('/__webpack_hmr').end(function (err, res) {
         if (err) return done(err);
@@ -48,13 +61,14 @@ describe('middleware', function () {
         if (err) return done(err);
 
         res.on('data', verify);
-
+        compiler.name = 'test name';
         compiler.emit('invalid');
 
         function verify() {
           assert.equal(res.events.length, 1);
           var event = JSON.parse(res.events[0].substring(5));
           assert.equal(event.action, 'building');
+          assert.equal(event.name, compiler.name);
           done();
         }
       });
