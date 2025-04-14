@@ -107,9 +107,13 @@ function EventSourceWrapper() {
     }
   }
 
-  function handleDisconnect() {
+  function disconnect() {
     clearInterval(timer);
     source.close();
+  }
+
+  function handleDisconnect() {
+    disconnect();
     setTimeout(init, options.timeout);
   }
 
@@ -117,6 +121,7 @@ function EventSourceWrapper() {
     addMessageListener: function (fn) {
       listeners.push(fn);
     },
+    disconnect: disconnect,
   };
 }
 
