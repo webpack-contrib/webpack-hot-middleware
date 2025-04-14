@@ -63,7 +63,7 @@ function setOverrides(overrides) {
   }
 
   if (overrides.dynamicPublicPath) {
-    options.path = __webpack_public_path__ + options.path;
+    options.path = (__webpack_public_path__ + options.path).replace(/\/\//g, '/');
   }
 
   if (overrides.ansiColors)
